@@ -20,7 +20,12 @@
   <compatibility>
     <ver>4.2</ver>
   </compatibility>
-  <comments>Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. It allows CiviCRM emails that are not bulk CiviMail messages to be sent through a service that can look after white listing, bounces and other issues. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery. This extension processes responses from Mandrill arising from the transactional emails (bounces, click-throughs, opens, etc.) by inserting custom metadata in each email's header to allow outbound emails and Mandrill events to be correlated. Pradeep Nayak and Joe Murray of JMA Consulting authored this extension with the generous sponsorship of Power to Change.</comments>
+  <comments>As of version 4.2, CiviCRM provides bounce processing only for bulk emails sent through the CiviMail component. Your domain's email reputation may suffer from your transactional emails - everything sent that doesn't go through CiviMai - bouncing or being marked as spam. In addition, there is no click-through tracking for transactional, non-CiviMail emails. This extension addresses both issues by integrating CiviCRM's transactional emails with an external service called Mandrill. If you use both this Mandrill Transactional Emails extension and the CiviMail component, all of your outbound email will be processed in a CAN-SPAM compliant manner.
+Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. It allows CiviCRM emails that are not bulk CiviMail messages to be sent through a service that can look after white listing, bounces and other issues. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery.
+This Mandrill Transactional Emails (mte) extension creates an Activity for each email sent to a person, and processes responses from Mandrill arising from them using a unique tracking identifier inserted into a custom email header.
+Pradeep Nayak and Joe Murray of JMA Consulting authored this extension with the generous sponsorship of Power to Change.
+For support, please see the extension's github issues queue.
+  </comments>
   <civix>
     <namespace>CRM/Mte</namespace>
   </civix>
