@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<extension key="biz.jmaconsulting.module.mte" type="module">
+  <downloadUrl>http://FIXME/biz.jmaconsulting.module.mte.zip</downloadUrl>
+  <file>mte</file>
+  <name>FIXME</name>
+  <description>FIXME</description>
+  <license>FIXME</license>
+  <maintainer>
+    <author>FIXME</author>
+    <email>FIXME@example.com</email>
+  </maintainer>
+  <releaseDate>2012-08-08</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Mte</namespace>
+  </civix>
+</extension>
