@@ -5,7 +5,7 @@
 /**
  * (Delegated) Implementation of hook_civicrm_config
  */
-function _<?= $mainFile ?>_civix_civicrm_config(&$config = NULL) {
+function _mte_civix_civicrm_config(&$config = NULL) {
   static $configured = FALSE;
   if ($configured) return;
   $configured = TRUE;
@@ -30,7 +30,7 @@ function _<?= $mainFile ?>_civix_civicrm_config(&$config = NULL) {
  *
  * @param $files array(string)
  */
-function _<?= $mainFile ?>_civix_civicrm_xmlMenu(&$files) {
+function _mte_civix_civicrm_xmlMenu(&$files) {
   foreach (glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
     $files[] = $file;
   }
@@ -39,9 +39,9 @@ function _<?= $mainFile ?>_civix_civicrm_xmlMenu(&$files) {
 /**
  * Implementation of hook_civicrm_install
  */
-function _<?= $mainFile ?>_civix_civicrm_install() {
-  _<?= $mainFile ?>_civix_civicrm_config();
-  if ($upgrader = _<?= $mainFile ?>_civix_upgrader()) {
+function _mte_civix_civicrm_install() {
+  _mte_civix_civicrm_config();
+  if ($upgrader = _mte_civix_upgrader()) {
     return $upgrader->onInstall();
   }
 }
@@ -49,10 +49,34 @@ function _<?= $mainFile ?>_civix_civicrm_install() {
 /**
  * Implementation of hook_civicrm_uninstall
  */
-function _<?= $mainFile ?>_civix_civicrm_uninstall() {
-  _<?= $mainFile ?>_civix_civicrm_config();
-  if ($upgrader = _<?= $mainFile ?>_civix_upgrader()) {
+function _mte_civix_civicrm_uninstall() {
+  _mte_civix_civicrm_config();
+  if ($upgrader = _mte_civix_upgrader()) {
     return $upgrader->onUninstall();
+  }
+}
+
+/**
+ * (Delegated) Implementation of hook_civicrm_enable
+ */
+function _mte_civix_civicrm_enable() {
+  _mte_civix_civicrm_config();
+  if ($upgrader = _mte_civix_upgrader()) {
+    if (is_callable(array($upgrader, 'onEnable'))) {
+      return $upgrader->onEnable();
+    }
+  }
+}
+
+/**
+ * (Delegated) Implementation of hook_civicrm_disable
+ */
+function _mte_civix_civicrm_disable() {
+  _mte_civix_civicrm_config();
+  if ($upgrader = _mte_civix_upgrader()) {
+    if (is_callable(array($upgrader, 'onDisable'))) {
+      return $upgrader->onDisable();
+    }
   }
 }
 
@@ -65,16 +89,64 @@ function _<?= $mainFile ?>_civix_civicrm_uninstall() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function _<?= $mainFile ?>_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  if ($upgrader = _<?= $mainFile ?>_civix_upgrader()) {
+function _mte_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  if ($upgrader = _mte_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
 }
 
-function _<?= $mainFile ?>_civix_upgrader() {
-  if (!file_exists(__DIR__.'/<?= $namespace ?>/Upgrader.php')) {
+function _mte_civix_upgrader() {
+  if (!file_exists(__DIR__.'/CRM/Mte/Upgrader.php')) {
     return NULL;
   } else {
-    return <?= $_namespace ?>_Upgrader_Base::instance();
+    return CRM_Mte_Upgrader_Base::instance();
+  }
+}
+
+/**
+ * Search directory tree for files which match a glob pattern
+ *
+ * @param $dir string, base dir
+ * @param $pattern string, glob pattern, eg "*.txt"
+ * @return array(string)
+ */
+function _mte_civix_find_files($dir, $pattern) {
+  $todos = array($dir);
+  $result = array();
+  while (!empty($todos)) {
+    $subdir = array_shift($todos);
+    foreach (glob("$subdir/$pattern") as $match) {
+      if (!is_dir($match)) {
+        $result[] = $match;
+      }
+    }
+    if ($dh = opendir($subdir)) {
+      while (FALSE !== ($entry = readdir($dh))) {
+        $path = $subdir . DIRECTORY_SEPARATOR . $entry;
+        if ($entry == '.' || $entry == '..') {
+        } elseif (is_dir($path)) {
+          $todos[] = $path;
+        }
+      }
+      closedir($dh);
+    }
+  }
+  return $result;
+}
+/**
+ * (Delegated) Implementation of hook_civicrm_managed
+ *
+ * Find any *.mgd.php files, merge their content, and return.
+ */
+function _mte_civix_civicrm_managed(&$entities) {
+  $mgdFiles = _mte_civix_find_files(__DIR__, '*.mgd.php');
+  foreach ($mgdFiles as $file) {
+    $es = include $file;
+    foreach ($es as $e) {
+      if (empty($e['module'])) {
+        $e['module'] = 'biz.jmaconsulting.mte';
+      }
+      $entities[] = $e;
+    }
   }
 }

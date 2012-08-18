@@ -1,12 +1,12 @@
 <?php
 
-require_once '<?= $mainFile ?>.civix.php';
+require_once 'mte.civix.php';
 
 /**
  * Implementation of hook_civicrm_config
  */
-function <?= $mainFile ?>_civicrm_config(&$config) {
-  _<?= $mainFile ?>_civix_civicrm_config($config);
+function mte_civicrm_config(&$config) {
+  _mte_civix_civicrm_config($config);
 }
 
 /**
@@ -14,22 +14,36 @@ function <?= $mainFile ?>_civicrm_config(&$config) {
  *
  * @param $files array(string)
  */
-function <?= $mainFile ?>_civicrm_xmlMenu(&$files) {
-  _<?= $mainFile ?>_civix_civicrm_xmlMenu($files);
+function mte_civicrm_xmlMenu(&$files) {
+  _mte_civix_civicrm_xmlMenu($files);
 }
 
 /**
  * Implementation of hook_civicrm_install
  */
-function <?= $mainFile ?>_civicrm_install() {
-  return _<?= $mainFile ?>_civix_civicrm_install();
+function mte_civicrm_install() {
+  return _mte_civix_civicrm_install();
 }
 
 /**
  * Implementation of hook_civicrm_uninstall
  */
-function <?= $mainFile ?>_civicrm_uninstall() {
-  return _<?= $mainFile ?>_civix_civicrm_uninstall();
+function mte_civicrm_uninstall() {
+  return _mte_civix_civicrm_uninstall();
+}
+
+/**
+ * Implementation of hook_civicrm_enable
+ */
+function mte_civicrm_enable() {
+  return _mte_civix_civicrm_enable();
+}
+
+/**
+ * Implementation of hook_civicrm_disable
+ */
+function mte_civicrm_disable() {
+  return _mte_civix_civicrm_disable();
 }
 
 /**
@@ -41,6 +55,16 @@ function <?= $mainFile ?>_civicrm_uninstall() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function <?= $mainFile ?>_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  return _<?= $mainFile ?>_civix_civicrm_upgrade($op, $queue);
+function mte_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  return _mte_civix_civicrm_upgrade($op, $queue);
+}
+
+/**
+ * Implementation of hook_civicrm_managed
+ *
+ * Generate a list of entities to create/deactivate/delete when this module
+ * is installed, disabled, uninstalled.
+ */
+function mte_civicrm_managed(&$entities) {
+  return _mte_civix_civicrm_managed($entities);
 }

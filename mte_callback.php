@@ -2,6 +2,8 @@
 
 session_start();
 
+// TODO: find and use the correct function or pattern to get the civicrm path
+// the extension directory may not be a sibling of it
 require_once '../../civicrm/civicrm.config.php';
 require_once '../../civicrm/CRM/Core/Config.php';
 
@@ -40,7 +42,8 @@ if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
         $params = array(
           'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Job', $mail->id, 'id', 'mailing_id'),
           'contact_id' => $emails['contact_id'],
-          'email_id' => $emails['id'],              
+          'email_id' => $emails['id'],
+          'activity_id' => CRM_Utils_Array::value('metadata', $value) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['metadata']) : null
         );
         $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
       }
@@ -83,6 +86,4 @@ if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
       }
     }
   }
- }
-
-?>
+}

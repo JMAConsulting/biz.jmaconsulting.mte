@@ -1,21 +1,26 @@
-<?xml version="1.0"?>
-<extension key="biz.jmaconsulting.module.mte" type="module">
-  <downloadUrl>http://FIXME/biz.jmaconsulting.module.mte.zip</downloadUrl>
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension key="biz.jmaconsulting.mte" type="module">
+  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/zipball/master</downloadUrl>
   <file>mte</file>
-  <name>FIXME</name>
-  <description>FIXME</description>
-  <license>FIXME</license>
+  <name>mte</name>
+  <description>Mandrill Transactional Emails</description>
+  <urls>
+  	<url desc="Support">https://github.com/JMAConsulting/biz.jmaconsulting.mte/issues</url>
+  	<url desc="Main Extension Page">
+  		https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
+  	</url></urls>
+  <license>AGPL-3.0</license>
   <maintainer>
-    <author>FIXME</author>
-    <email>FIXME@example.com</email>
+    <author>JMA Consulting</author>
+    <email>joe.murray@jmaconsulting.biz</email>
   </maintainer>
   <releaseDate>2012-08-08</releaseDate>
-  <version>1.0</version>
-  <develStage>alpha</develStage>
+  <version>1.0.beta1</version>
+  <develStage>beta</develStage>
   <compatibility>
     <ver>4.2</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. It allows CiviCRM emails that are not bulk CiviMail messages to be sent through a service that can look after white listing, bounces and other issues. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery. This extension processes responses from Mandrill arising from the transactional emails (bounces, click-throughs, opens, etc.) by inserting custom metadata in each email's header to allow outbound emails and Mandrill events to be correlated. Pradeep Nayak and Joe Murray of JMA Consulting authored this extension with the generous sponsorship of Power to Change.</comments>
   <civix>
     <namespace>CRM/Mte</namespace>
   </civix>

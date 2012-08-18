@@ -5,7 +5,7 @@
 /**
  * Base class which provides helpers to execute upgrade logic
  */
-class <?= $_namespace ?>_Upgrader_Base {
+class CRM_Mte_Upgrader_Base {
 
   /**
    * @var varies, subclass of htis
@@ -35,11 +35,11 @@ class <?= $_namespace ?>_Upgrader_Base {
   /**
    * Obtain a refernece to the active upgrade handler
    */
-  static function instance() {
+  static public function instance() {
     if (! self::$instance) {
       // FIXME auto-generate
-      self::$instance = new <?= $_namespace ?>_Upgrader(
-        '<?= $fullName ?>',
+      self::$instance = new CRM_Mte_Upgrader(
+        'biz.jmaconsulting.mte',
         __DIR__ .'/../../../'
       );
     }
@@ -53,10 +53,10 @@ class <?= $_namespace ?>_Upgrader_Base {
    * task-context; otherwise, this will be non-reentrant.
    *
    * @code
-   * <?= $_namespace ?>_Upgrader_Base::_queueAdapter($ctx, 'methodName', 'arg1', 'arg2');
+   * CRM_Mte_Upgrader_Base::_queueAdapter($ctx, 'methodName', 'arg1', 'arg2');
    * @endcode
    */
-  static function _queueAdapter() {
+  static public function _queueAdapter() {
     $instance = self::instance();
     $args = func_get_args();
     $instance->ctx = array_shift($args);
@@ -65,7 +65,7 @@ class <?= $_namespace ?>_Upgrader_Base {
     return call_user_func_array(array($instance, $method), $args);
   }
 
-  function __construct($extensionName, $extensionDir) {
+  public function __construct($extensionName, $extensionDir) {
     $this->extensionName = $extensionName;
     $this->extensionDir = $extensionDir;
   }
@@ -75,7 +75,7 @@ class <?= $_namespace ?>_Upgrader_Base {
   /**
    * Run a SQL file
    */
-  function executeSqlFile($relativePath) {
+  public function executeSqlFile($relativePath) {
     CRM_Utils_File::sourceSQLFile(
       CIVICRM_DSN,
       $this->extensionDir . '/' . $relativePath
@@ -90,7 +90,7 @@ class <?= $_namespace ?>_Upgrader_Base {
    * provides syntatic sugar for queueing several tasks that
    * run different queries
    */
-  function executeSql($query, $params = array()) {
+  public function executeSql($query, $params = array()) {
     // FIXME verify that we raise an exception on error
     CRM_Core_DAO::executeSql($query, $params);
     return TRUE;
@@ -104,7 +104,7 @@ class <?= $_namespace ?>_Upgrader_Base {
    * After passing the $funcName, you can also pass parameters that will go to
    * the function. Note that all params must be serializable.
    */
-  function addTask($title) {
+  public function addTask($title) {
     $args = func_get_args();
     $title = array_shift($args);
     $task = new CRM_Queue_Task(
@@ -122,7 +122,7 @@ class <?= $_namespace ?>_Upgrader_Base {
    *
    * @return bool
    */
-  function hasPendingRevisions() {
+  public function hasPendingRevisions() {
     $revisions = $this->getRevisions();
     $currentRevision = $this->getCurrentRevision();
 
@@ -139,7 +139,7 @@ class <?= $_namespace ?>_Upgrader_Base {
   /**
    * Add any pending revisions to the queue
    */
-  function enqueuePendingRevisions(CRM_Queue_Queue $queue) {
+  public function enqueuePendingRevisions(CRM_Queue_Queue $queue) {
     $this->queue = $queue;
 
     $currentRevision = $this->getCurrentRevision();
@@ -174,7 +174,7 @@ class <?= $_namespace ?>_Upgrader_Base {
    *
    * @return array(revisionNumbers) sorted numerically
    */
-  function getRevisions() {
+  public function getRevisions() {
     if (! is_array($this->revisions)) {
       $this->revisions = array();
 
@@ -191,13 +191,13 @@ class <?= $_namespace ?>_Upgrader_Base {
     return $this->revisions;
   }
 
-  function getCurrentRevision() {
+  public function getCurrentRevision() {
     // return CRM_Core_BAO_Extension::getSchemaVersion($this->extensionName);
     $key = $this->extensionName . ':version';
     return CRM_Core_BAO_Setting::getItem('Extension', $key);
   }
 
-  function setCurrentRevision($revision) {
+  public function setCurrentRevision($revision) {
     // We call this during hook_civicrm_install, but the underlying SQL
     // UPDATE fails because the extension record hasn't been INSERTed yet.
     // Instead, track revisions in our own namespace.
@@ -210,9 +210,12 @@ class <?= $_namespace ?>_Upgrader_Base {
 
   // ******** Hook delegates ********
 
-  function onInstall() {
+  public function onInstall() {
     foreach (glob($this->extensionDir . '/sql/*_install.sql') as $file) {
       CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+    }
+    if (is_callable(array($this, 'install'))) {
+      $this->install();
     }
     $revisions = $this->getRevisions();
     if (!empty($revisions)) {
@@ -220,14 +223,31 @@ class <?= $_namespace ?>_Upgrader_Base {
     }
   }
 
-  function onUninstall() {
+  public function onUninstall() {
+    if (is_callable(array($this, 'uninstall'))) {
+      $this->uninstall();
+    }
     foreach (glob($this->extensionDir . '/sql/*_uninstall.sql') as $file) {
       CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
     }
     $this->setCurrentRevision(NULL);
   }
 
-  function onUpgrade($op, CRM_Queue_Queue $queue = NULL) {
+  public function onEnable() {
+    // stub for possible future use
+    if (is_callable(array($this, 'enable'))) {
+      $this->enable();
+    }
+  }
+
+  public function onDisable() {
+    // stub for possible future use
+    if (is_callable(array($this, 'disable'))) {
+      $this->disable();
+    }
+  }
+
+  public function onUpgrade($op, CRM_Queue_Queue $queue = NULL) {
     switch($op) {
       case 'check':
         return array($this->hasPendingRevisions());
