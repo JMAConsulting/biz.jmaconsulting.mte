@@ -95,3 +95,44 @@ function mte_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function mte_civicrm_managed(&$entities) {
   return _mte_civix_civicrm_managed($entities);
 }
+
+/**
+ * Implementation of hook_civicrm_alterMailParams( )
+ * To send headers in mail and also create activity
+ */
+function mte_civicrm_alterMailParams(&$params) {
+  $session   = CRM_Core_Session::singleton();
+  $userID = $session->get('userID');
+  $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+
+  $activityParams = array( 
+    'source_contact_id' => $userID,
+    'activity_type_id' => array_search('Mandrill Email Sent', $activityTypes),
+    'subject' => CRM_Utils_Array::value('subject', $params),
+    'activity_date_time' => date('YmdHis'),
+    'status_id' => 1,
+    'priority_id' => 1,
+    'version' => 3,
+  );
+  $result = civicrm_api( 'activity','create',$activityParams );
+  if(CRM_Utils_Array::value('id', $result)){
+    $params['activityId'] = $result['id'];
+    $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "'.$result['id'].'" }';
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_postEmailSend( )
+ * To update the status of activity created in hook_civicrm_alterMailParams.
+ */
+function mte_civicrm_postEmailSend(&$params) {
+  if(CRM_Utils_Array::value('activityId', $params)){
+    $activityParams = array( 
+      'id' => $params['activityId'],
+      'status_id' => 2,
+      'version' => 3,
+      'target_contact_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email'), 
+    );
+    $result = civicrm_api( 'activity','create',$activityParams );
+  }
+}
