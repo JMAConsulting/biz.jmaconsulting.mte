@@ -175,7 +175,7 @@ class CRM_Utils_Mail {
         CRM_Core_Session::setStatus($message, TRUE);
         return FALSE;
       }
-      //CRM_Utils_Hook::postEmailSend($params);
+      CRM_Utils_Hook::postEmailSend($params);
       return TRUE;
     }
     return FALSE;
