@@ -39,3 +39,14 @@ ALTER TABLE `civicrm_mailing_event_queue`
 
 ALTER TABLE `civicrm_mailing_event_queue`
   ADD CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
+
+
+-- add new activity type
+
+SELECT @civicrm_activity_type_id := id FROM `civicrm_option_group` WHERE `name` LIKE 'activity_type';
+
+SELECT @max_val    := MAX(ROUND(op.value)) FROM civicrm_option_value op WHERE op.option_group_id  = @civicrm_activity_type_id;
+SELECT @weight := MAX(weight) FROM civicrm_option_value WHERE option_group_id = @civicrm_activity_type_id;
+
+INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `weight`, `description`) 
+VALUES (@civicrm_activity_type_id, 'Mandrill Email Sent', @max_val+1, 'Mandrill Email Sent', @weight+1, 'Mandrill Email Sent');

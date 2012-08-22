@@ -39,7 +39,6 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed
    */
   public function install() {
-    $this->executeSqlFile('sql/mte_install.sql');
     CRM_Core_Invoke::rebuildMenuAndCaches( );
     $mailingParams = array(
       'subject' => '***All Transactional Emails***',
