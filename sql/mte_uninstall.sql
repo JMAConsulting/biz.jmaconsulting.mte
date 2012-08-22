@@ -35,6 +35,14 @@ ALTER TABLE `civicrm_mailing_bounce_type`
 ALTER TABLE `civicrm_mailing_event_queue`
   DROP CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
 
+-- Drop activity_id column
 ALTER TABLE `civicrm_mailing_event_queue` 
   DROP `activity_id` INT UNSIGNED NULL DEFAULT NULL COMMENT 'Activity id of activity type email and bulk mail.';
+
+-- Delete data for mandrill extensions
+DELETE FROM `civicrm_mailing` 
+WHERE `civicrm_mailing`.`subject` = '***All Transactional Emails***' AND `civicrm_mailing`.`url_tracking` = 1 AND `civicrm_mailing`.`forward_replies` = 0 AND `civicrm_mailing`.`auto_responder` = 0
+AND `civicrm_mailing`.`open_tracking` = 1 AND `civicrm_mailing`.`is_completed` = 0;
+
+DELETE FROM `civicrm_mailing_job` WHERE `civicrm_mailing_job`.`job_type` = 'Special: All transactional emails being sent through Mandrill';
 
