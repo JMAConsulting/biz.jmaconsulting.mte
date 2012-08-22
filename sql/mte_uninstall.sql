@@ -26,11 +26,6 @@
  *          Canada   M5T 2C7
  */
 
--- Change enum for name in civicrm_mailing_bounce_type to remove all Mandrill bounce types
-ALTER TABLE `civicrm_mailing_bounce_type` 
-  CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown' ) 
-    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
-
 -- Drop column in civicrm_mailing_event_queue as activity_id of type email 
 ALTER TABLE `civicrm_mailing_event_queue`
   DROP CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
@@ -45,4 +40,12 @@ WHERE `civicrm_mailing`.`subject` = '***All Transactional Emails***' AND `civicr
 AND `civicrm_mailing`.`open_tracking` = 1 AND `civicrm_mailing`.`is_completed` = 0;
 
 DELETE FROM `civicrm_mailing_job` WHERE `civicrm_mailing_job`.`job_type` = 'Special: All transactional emails being sent through Mandrill';
+
+DELETE FROM `civicrm_mailing_bounce_type` WHERE `civicrm_mailing_bounce_type`.`name` in ('Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject');
+
+-- Change enum for name in civicrm_mailing_bounce_type to remove all Mandrill bounce types
+ALTER TABLE `civicrm_mailing_bounce_type` 
+  CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown' ) 
+    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
+
 
