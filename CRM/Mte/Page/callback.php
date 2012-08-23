@@ -34,14 +34,6 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
 	
   function run() {
     if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
-      require_once 'api/api.php';
-      require_once 'CRM/Mailing/DAO/Mailing.php';
-      require_once 'CRM/Mailing/Event/BAO/Queue.php';
-      require_once 'CRM/Mailing/Event/BAO/Opened.php';
-      require_once 'CRM/Mailing/BAO/TrackableURL.php';
-      require_once 'CRM/Mailing/Event/BAO/TrackableURLOpen.php';
-      require_once 'CRM/Core/PseudoConstant.php';
-      require_once 'CRM/Mailing/Event/BAO/Bounce.php';
       $bounceType = array();
       $reponse = json_decode($_POST['mandrill_events'], TRUE);
       if (is_array($reponse)) {
@@ -67,7 +59,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
               'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Job', $mail->id, 'id', 'mailing_id'),
               'contact_id' => $emails['contact_id'],
               'email_id' => $emails['id'],
-              'activity_id' => CRM_Utils_Array::value('metadata', $value) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['metadata']) : null
+              'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
             );
             $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
           }
