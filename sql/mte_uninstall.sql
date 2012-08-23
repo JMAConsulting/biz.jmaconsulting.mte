@@ -48,4 +48,11 @@ ALTER TABLE `civicrm_mailing_bounce_type`
   CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown' ) 
     CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
 
+-- Delete all the activities and 'Mandrill Email Sent' activity type
+DELETE  `civicrm_activity`, `civicrm_option_value`
+FROM `civicrm_activity`, `civicrm_option_group`, `civicrm_option_value` 
+WHERE `civicrm_option_group`.`name` = 'activity_type' 
+AND `civicrm_option_group`.`id` = `civicrm_option_value`.`option_group_id`
+AND `civicrm_option_value`.`name` = 'Mandrill Email Sent'
+AND `civicrm_activity`.`activity_type_id` = `civicrm_option_value`.`value`;
 
