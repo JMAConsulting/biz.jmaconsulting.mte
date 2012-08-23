@@ -28,8 +28,6 @@
  *          Canada   M5T 2C7
  */
 
-require_once 'CRM/Core/Page.php';
-
 class CRM_Mte_Page_callback extends CRM_Core_Page {
 	
   function run() {

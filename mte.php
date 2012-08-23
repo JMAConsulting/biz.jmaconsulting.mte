@@ -108,7 +108,7 @@ function mte_civicrm_alterMailParams(&$params) {
   $activityParams = array( 
     'source_contact_id' => $userID,
     'activity_type_id' => array_search('Mandrill Email Sent', $activityTypes),
-    'subject' => CRM_Utils_Array::value('subject', $params),
+    'subject' => CRM_Utils_Array::value('subject', $params) ? $params['subject'] : CRM_Utils_Array::value('Subject', $params),
     'activity_date_time' => date('YmdHis'),
     'status_id' => 1,
     'priority_id' => 1,
