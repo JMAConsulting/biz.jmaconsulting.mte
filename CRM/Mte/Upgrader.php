@@ -96,11 +96,8 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
   /**
    * Example: Run an external SQL script when the module is uninstalled
    */
-  public function uninstall() {
-   // TODO: remove Activities created by mte, mtee bounce types 
-   // and the mte mailing job and mailing 
-  	$this->executeSqlFile('sql/mte_uninstall.sql');
-  }
+  // public function uninstall() {
+  // }
 
   /**
    * Example: Run a simple query when a module is enabled
