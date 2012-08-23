@@ -50,6 +50,9 @@ function _mte_civix_civicrm_config(&$config = NULL) {
 
   $include_path = $extRoot . PATH_SEPARATOR . get_include_path( );
   set_include_path( $include_path );
+  $item = CRM_Core_Menu::get($_GET['q']);
+  if($_GET['q'] == 'civicrm/mte/callback' && $item['page_callback'] == 'CRM_Mte_Page_callback')
+    CRM_Utils_System::authenticateScript(TRUE);
 }
 
 /**
