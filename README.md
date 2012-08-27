@@ -7,8 +7,8 @@ See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Man
 
 Installation:
 
-Install CiviCRM 4.2+
-====================
+Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2+
+============================================================================
 
 1. Setup Mandrill
 
@@ -17,7 +17,6 @@ Create API key as follows:
 Click on Settings (Gear icon top-right) >> SMTP & API Credentials.
 Click +New API Key
 Note SMTP Credentials, or leave window tab open for a few steps.
-
 
 
 2. Setup From Email address
