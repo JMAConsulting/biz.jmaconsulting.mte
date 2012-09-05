@@ -10,13 +10,13 @@ Installation:
 Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2+
 ============================================================================
 
-1. Setup Mandrill
-1.1. Register for or login to your Mandrill account at https://mandrillapp.com/login/
-1.2. Create API key as follows:
-1.3. Click on Settings (Gear icon top-right) >> SMTP & API Credentials.
-1.4. Click +New API Key
-1.5. Note SMTP Credentials, or leave window tab open for a few steps.
-2. Setup From Email address
+# Setup Mandrill
+## Register for or login to your Mandrill account at https://mandrillapp.com/login/
+## Create API key as follows:
+## Click on Settings (Gear icon top-right) >> SMTP & API Credentials.
+## Click +New API Key
+## Note SMTP Credentials, or leave window tab open for a few steps.
+# Setup From Email address
 2.1. If you have not already done so, go to:
 2.2. Administer >> Communications >> From Email Addresses.
 2.3. Enter a from address you would like to display to users for CiviCRM emails, for example, info@yourorg.org.
