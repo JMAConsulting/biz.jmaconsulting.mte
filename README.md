@@ -1,12 +1,12 @@
-biz.jmaconsulting.mte
-=====================
+biz.jmaconsulting.mte version 1.0 for CiviCRM 4.2.0
+===================================================
 
-Mandrill Transactional Emails Extension for CiviCRM
+Mandrill Transactional Emails
 
 See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
 
-Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2.0
-=============================================================================
+Installation instructions for Mandrill Transactional Emails
+===========================================================
 
 * Setup Mandrill
   * Register for or login to your Mandrill account at https://mandrillapp.com/login/
