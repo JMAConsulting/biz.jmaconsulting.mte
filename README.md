@@ -5,10 +5,8 @@ Mandrill Transactional Emails Extension for CiviCRM
 
 See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
 
-Installation:
-
-Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2+
-============================================================================
+Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2.0
+=============================================================================
 
 * Setup Mandrill
   * Register for or login to your Mandrill account at https://mandrillapp.com/login/
