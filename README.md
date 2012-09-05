@@ -58,7 +58,7 @@ Installation instructions for Mandrill Transactional Emails for CiviCRM 4.2+
   * Login or go to your Mandrill account at https://mandrillapp.com/login/
   * Click on Settings (ie the Gear icon on the top-right) >> Webhooks
   * Click on +Add a Webhook
-  * Click to enable all entries _except_ Message Is Sent, including:
+  * Click to enable all entries _except_ Message Is Sent, including
     * Message Is Soft-bounced
     * Message Is Clicked
     * Message Recipient Unsubscribe
