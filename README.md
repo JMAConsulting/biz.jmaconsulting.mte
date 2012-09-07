@@ -1,4 +1,4 @@
-biz.jmaconsulting.mte version 1.0 for CiviCRM 4.2.0
+biz.jmaconsulting.mte version 1.1 for CiviCRM 4.2.0
 ===================================================
 
 Mandrill Transactional Emails
@@ -33,9 +33,6 @@ Installation instructions for Mandrill Transactional Emails
   * If you have not already done so, go to Administer >> System Settings >> Directories
     * Set an appropriate value for CiviCRM Extensions Directory. For example, for Drupal, /path/to/drupalroot/sites/all/modules/Extensions/
     * In a different window, ensure the directory exists and is readable by your web server process.
-    * If the Custom PHP Path Directory is blank, set it to the same value as CiviCRM Extensions Directory from 4.1.1 followed by biz.jmaconsulting.mte/, for example, /path/to/drupalroot/sites/all/modules/Extensions/bi.jmaconsulting.mte/ 
-    * If there is a path already entered in the Custom PHP Path Directory, copy Extensions/biz.jmaconsulting.mte/CRM/Utils/Hook.php to custom_php/CRM/Utils/Hook.php
-    * This 4.2 requirement is temporary and will be removed in future versions after a change to CiviCRM core code.
   * Click Save.
 * Setup Extensions Resources URL
   * If you have not already done so, go to Administer >> System Settings >> Resource URLs
