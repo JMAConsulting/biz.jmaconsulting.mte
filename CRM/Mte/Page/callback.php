@@ -39,12 +39,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
         foreach ($reponse as $value) {
           //changes done to check if email exists in response array
           if (in_array($value['event'], $events) && CRM_Utils_Array::value('email', $value['msg'])) {
-            $params = array( 
-              'email' => $value['msg']['email'],
-              'version' => 3,
-            );
-            $result = civicrm_api( 'email','get',$params );
-            
+           
             $mail = new CRM_Mailing_DAO_Mailing();
             $mail->domain_id = CRM_Core_Config::domainID();
             $mail->subject = "***All Transactional Emails***";
@@ -52,26 +47,23 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
             $mail->forward_replies = FALSE;
             $mail->auto_responder = FALSE;
             $mail->open_tracking = TRUE;
-
-            if ($mail->find(TRUE) && CRM_Utils_Array::value('values', $result) && !empty($result['values'])){
-              // changes done for bad data, sometimes there are multiple emails but without contact id
-              foreach ($result['values'] as $emailId => $emailValue) {
-                if (CRM_Utils_Array::value('contact_id', $emailValue)) {
-                  $emails = $emailValue;
-                  break;
-                }
-              }
+            
+            $contacts = array();
+            if ($mail->find(TRUE)) {
               
-              if (!CRM_Utils_Array::value('contact_id', $emails)) {
+              $emails = self::retrieveEmailContactId($value['msg']['email']);
+              
+              if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
                 continue;
               }
               $params = array(
                 'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Job', $mail->id, 'id', 'mailing_id'),
-                'contact_id' => $emails['contact_id'],
-                'email_id' => $emails['id'],
+                'contact_id' => $emails['email']['contact_id'],
+                'email_id' => $emails['email']['id'],
                 'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
               );
               $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
+              $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
               switch ($value['event']) {
               case 'open':
                 $oe                 = new CRM_Mailing_Event_BAO_Opened();
@@ -101,7 +93,6 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 if (empty($bounceType)) {
                   CRM_Core_PseudoConstant::populate($bounceType, 'CRM_Mailing_DAO_BounceType', TRUE, 'id', NULL, NULL, NULL, 'name');
                 }
-                $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
                 $bounce             = new CRM_Mailing_Event_BAO_Bounce();
                 $bounce->time_stamp =  date('YmdHis', $value['ts']);
                 $bounce->event_queue_id = $eventQueue->id;
@@ -109,6 +100,26 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 $bounce->bounce_reason  = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description');
                 $bounce->save();
                 break;
+              }
+              
+              // create activity for click and open event
+              if ($value['event'] == 'open' || $value['event'] == 'click') {
+                $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+                $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
+                if (!CRM_Utils_Array::value('contact_id', $sourceContactId['email'])) {
+                  continue;
+                }
+                $activityParams = array( 
+                  'source_contact_id' => $sourceContactId['email']['contact_id'],
+                  'activity_type_id' => array_search("Mandrill Email $bType", $activityTypes),
+                  'subject' => CRM_Utils_Array::value('subject', $value['msg']) ? $value['msg']['subject'] : "Mandrill Email $bType",
+                  'activity_date_time' => date('YmdHis'),
+                  'status_id' => 1,
+                  'priority_id' => 1,
+                  'version' => 3,
+                  'target_contact_id' => $emails['contactIds'],
+                );
+                civicrm_api( 'activity','create',$activityParams );
               }
             }
           }
@@ -118,5 +129,39 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
     
     CRM_Utils_System::civiExit();
   }
+
+  /* Function to retrieve email details of sender and to
+   * 
+   * $email string email id
+   * $checkUnique to check unique email id i.e no more then 1 contact for a email ID.
+   *
+   */
+  function retrieveEmailContactId($email, $checkUnique = FALSE) {
+    if(!$email) {
+      return FALSE;
+    }
+    $emails['email'] = null;
+    $params = array( 
+      'email' => $email,
+      'version' => 3,
+    );
+    $result = civicrm_api( 'email','get',$params );
+    
+    // changes done for bad data, sometimes there are multiple emails but without contact id   
+    foreach ($result['values'] as $emailId => $emailValue) {
+      if (CRM_Utils_Array::value('contact_id', $emailValue)) {
+        if (CRM_Utils_Array::value('email', $emails) && $checkUnique) {
+          return FALSE;
+        }
+        if (!CRM_Utils_Array::value('email', $emails)) {
+          $emails['email'] = $emailValue;
+        }
+        if (!$checkUnique) {
+          $emails['contactIds'][] = $emailValue['contact_id'];
+        }
+      }
+    }     
+    return $emails;
+  }
 }
-      
+
