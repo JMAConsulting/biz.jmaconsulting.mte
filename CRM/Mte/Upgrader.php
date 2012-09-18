@@ -132,12 +132,13 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
    *
    * @return TRUE on success
    * @throws Exception
+   */
   public function upgrade_4201() {
     $this->ctx->log->info('Applying update 4201');
     // this path is relative to the extension base dir
     $this->executeSqlFile('sql/upgrade_4201.sql');
     return TRUE;
-  } // */
+  } 
 
 
   /**
