@@ -38,60 +38,9 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
   /**
    * Example: Run an external SQL script when the module is installed
    */
-  public function install() {
-    CRM_Core_Invoke::rebuildMenuAndCaches( );
-    $mailingParams = array(
-      'subject' => '***All Transactional Emails***',
-      'url_tracking' => TRUE,
-      'forward_replies' => FALSE,
-      'auto_responder' => FALSE,
-      'open_tracking' => TRUE,
-      'is_completed' => FALSE,
-    );
-
-    //create entry in civicrm_mailing
-    $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams, $ids);
-
-    //add entry in civicrm_mailing_job
-    $saveJob             = new CRM_Mailing_DAO_Job();
-    $saveJob->start_date = $saveJob->end_date = date('YmdHis');
-    $saveJob->status     = 'Completed';
-    $saveJob->job_type   = "Special: All transactional emails being sent through Mandrill";
-    $saveJob->mailing_id = $mailing->id;
-    $saveJob->save();
-
-    // create mailing bounce type
-    $mailingBounceType = array(
-      '1' => array ( 
-        'name' => 'Mandrill Hard',
-        'description' => 'Mandrill hard bounce',
-        'hold_threshold' => 1,
-      ),
-      '2' => array ( 
-        'name' => 'Mandrill Soft',
-        'description' => 'Mandrill soft bounce',
-       'hold_threshold' => 3,
-      ),
-      '3' => array ( 
-        'name' => 'Mandrill Spam',
-        'description' => 'User marked a transactional email sent via Mandrill as spam',
-        'hold_threshold' => 1,
-      ),
-      '4' => array ( 
-        'name' => 'Mandrill Reject',
-        'description' => 'Mandrill rejected delivery to this email address',
-        'hold_threshold' => 1,
-      ),
-    );
-
-    foreach ($mailingBounceType as $value) {
-      $bounceType = new CRM_Mailing_DAO_BounceType();
-      $bounceType->copyValues($value);
-      if(!$bounceType->find(true)) {
-        $bounceType->save();
-      }
-    }
-  }
+  /* public function install() { */
+  /*   CRM_Core_Invoke::rebuildMenuAndCaches(); */
+  /* } */
 
   /**
    * Example: Run an external SQL script when the module is uninstalled
@@ -140,6 +89,18 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     return TRUE;
   } 
 
+  /**
+   * Example: Run an external SQL script
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4202() {
+    $this->ctx->log->info('Applying update 4202');
+    // this path is relative to the extension base dir
+    $this->executeSqlFile('sql/upgrade_4202.sql');
+    return TRUE;
+  } 
 
   /**
    * Example: Run a slow upgrade process by breaking it up into smaller chunk

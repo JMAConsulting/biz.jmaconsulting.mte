@@ -28,20 +28,21 @@
 
 -- Drop column in civicrm_mailing_event_queue as activity_id of type email 
 ALTER TABLE `civicrm_mailing_event_queue`
-  DROP CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
+DROP FOREIGN KEY FK_civicrm_mailing_event_queue_activity_id,
+DROP INDEX FK_civicrm_mailing_event_queue_activity_id;
 
 -- Drop activity_id column
 ALTER TABLE `civicrm_mailing_event_queue` 
-  DROP `activity_id` INT UNSIGNED NULL DEFAULT NULL COMMENT 'Activity id of activity type email and bulk mail.';
+  DROP `activity_id`;
 
 -- Delete data for mandrill extensions
 DELETE FROM `civicrm_mailing` 
 WHERE `civicrm_mailing`.`subject` = '***All Transactional Emails***' AND `civicrm_mailing`.`url_tracking` = 1 AND `civicrm_mailing`.`forward_replies` = 0 AND `civicrm_mailing`.`auto_responder` = 0
 AND `civicrm_mailing`.`open_tracking` = 1 AND `civicrm_mailing`.`is_completed` = 0;
 
-DELETE FROM `civicrm_mailing_job` WHERE `civicrm_mailing_job`.`job_type` = 'Special: All transactional emails being sent through Mandrill';
+DELETE FROM `civicrm_mailing_job` WHERE `job_type` = 'Special: All transactional emails being sent through Mandrill';
 
-DELETE FROM `civicrm_mailing_bounce_type` WHERE `civicrm_mailing_bounce_type`.`name` in ('Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject');
+DELETE FROM `civicrm_mailing_bounce_type` WHERE `name` in ('Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject');
 
 -- Change enum for name in civicrm_mailing_bounce_type to remove all Mandrill bounce types
 ALTER TABLE `civicrm_mailing_bounce_type` 
@@ -56,3 +57,7 @@ AND `civicrm_option_group`.`id` = `civicrm_option_value`.`option_group_id`
 AND `civicrm_option_value`.`name` = 'Mandrill Email Sent'
 AND `civicrm_activity`.`activity_type_id` = `civicrm_option_value`.`value`;
 
+-- MTE-14
+DELETE cg, cv FROM civicrm_option_group cg
+INNER JOIN civicrm_option_value cv ON cg.id = cv.option_group_id
+WHERE cg.name = 'Mandrill Secret';
