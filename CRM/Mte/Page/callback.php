@@ -31,6 +31,11 @@
 class CRM_Mte_Page_callback extends CRM_Core_Page {
 	
   function run() {
+    $secretCode = CRM_Utils_Type::escape($_GET['mandrillSecret'], 'String');
+    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+    if ($secretCode != $mandrillSecret['Secret Code']) {
+      return FALSE;
+    }
     if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
       $bounceType = array();
       $reponse = json_decode($_POST['mandrill_events'], TRUE);
@@ -126,7 +131,6 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
         }
       }
     }
-    
     CRM_Utils_System::civiExit();
   }
 
