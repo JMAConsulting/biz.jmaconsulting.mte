@@ -4,6 +4,6 @@
     <path>civicrm/mte/callback</path>
     <page_callback>CRM_Mte_Page_callback</page_callback>
     <title>callback</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_callback>1</access_callback>
   </item>
 </menu>

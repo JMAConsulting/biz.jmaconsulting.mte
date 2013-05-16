@@ -60,13 +60,13 @@ function mte_civicrm_install() {
   );
 
   //create entry in civicrm_mailing
-  $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams, $ids);
+  $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams, CRM_Core_DAO::$_nullArray);
 
   //add entry in civicrm_mailing_job
-  $saveJob             = new CRM_Mailing_DAO_Job();
+  $saveJob = new CRM_Mailing_DAO_Job();
   $saveJob->start_date = $saveJob->end_date = date('YmdHis');
-  $saveJob->status     = 'Completed';
-  $saveJob->job_type   = "Special: All transactional emails being sent through Mandrill";
+  $saveJob->status = 'Complete';
+  $saveJob->job_type = "Special: All transactional emails being sent through Mandrill";
   $saveJob->mailing_id = $mailing->id;
   $saveJob->save();
 
@@ -186,5 +186,16 @@ function mte_civicrm_postEmailSend(&$params) {
       'target_contact_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email'), 
     );
     $result = civicrm_api( 'activity','create',$activityParams );
+  }
+}
+
+function mte_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Admin_Form_Setting_Smtp') {
+    $element = $form->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
+    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+    $config = CRM_Core_Config::singleton();
+    $default['mandril_post_url'] = $config->userFrameworkBaseURL . 'civicrm/mte/callback?mandrillSecret=' . $mandrillSecret['Secret Code'];
+    $form->setDefaults($default);
+    $element->freeze();
   }
 }
