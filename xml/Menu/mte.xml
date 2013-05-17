@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <menu>
   <item>
-    <path>civicrm/mte/callback</path>
+    <path>civicrm/ajax/mte/callback</path>
     <page_callback>CRM_Mte_Page_callback</page_callback>
-    <title>callback</title>
     <access_callback>1</access_callback>
+    <title>callback</title>
   </item>
 </menu>

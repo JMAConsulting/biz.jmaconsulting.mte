@@ -27,10 +27,10 @@
  */
 
 -- MTE-14 add option group Mandrill Secret
-INSERT INTO `trunk_crm`.`civicrm_option_group` (name, title, description, is_reserved, is_active)
-VALUES ('Mandrill Secret', 'Mandrill Secret', 'Mandrill Secret', '1', 1);
+INSERT INTO `civicrm_option_group` (name, title, description, is_reserved, is_active)
+VALUES ('mandrill_secret', 'Mandrill Secret', 'Mandrill Secret', '1', 1);
 SET @optionGroupId := LAST_INSERT_ID();
 
 INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `weight`, `description`) 
-VALUES (@optionGroupId, 'Secret Code', 1, 'Secret Code', 1, 'Mandrill Email Sent');
+VALUES (@optionGroupId, 'Secret Code', SUBSTRING(MD5(RAND()) FROM 1 FOR 16), 'Secret Code', 1, 'Mandrill Email Sent');
        
