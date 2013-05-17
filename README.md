@@ -57,7 +57,7 @@ Installation instructions for Mandrill Transactional Emails
     * Message Is Opened
     * Message Is Marked As Spam
     * Message Is Rejected
-  * In Post to URL, enter the resource URL that you saved in the previous step above. For example: http://yourorg.org//civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502 where username and password are from step 7 above and the civicrm-site-key is from step 8 above.
+  * In Post to URL, enter the resource URL that you saved in the previous step above. For example: http://yourorg.org//civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502 
 * Test by doing an action in CiviCRM that sends out a non-bulk email.
 * This should not be necessary, but if you would like to change the secret code that is used to ensure secure communication from Mandrill to your instance of CiviCRM, you can change the secret as follows:
   * Go to Administer > System Settings > Option Groups.
