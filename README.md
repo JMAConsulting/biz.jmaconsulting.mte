@@ -14,21 +14,6 @@ Installation instructions for Mandrill Transactional Emails
   * Click on Settings (Gear icon top-right) >> SMTP & API Credentials.
   * Click +New API Key
   * Note SMTP Credentials, or leave window tab open for a few steps.
-* Setup From Email address
-  * If you have not already done so, go to:
-  * Administer >> Communications >> From Email Addresses.
-  * Enter a from address you would like to display to users for CiviCRM emails, for example, info@yourorg.org.
-* Setup Outbound Email
-  * Administer >> System Settings >> Outbound Email (SMTP/Sendmail).
-  * Click on SMTP.
-  * Enter the following:
-    * SMTP Server: smtp.mandrillapp.com
-    * SMTP Port: 587
-    * Authentication: Yes
-    * SMTP Username: (from step 1 above, e.g. mail@yourorg.org)
-    * SMTP Password: (copy and paste API Key from step 1 above, e.g. 12345678-abcd-1234-efgh-123456789012)
-  * Click Save & Send Test Email
-  * Check that you received the test email.
 * Setup Extensions Directory 
   * If you have not already done so, go to Administer >> System Settings >> Directories
     * Set an appropriate value for CiviCRM Extensions Directory. For example, for Drupal, /path/to/drupalroot/sites/all/modules/Extensions/
@@ -43,11 +28,22 @@ Installation instructions for Mandrill Transactional Emails
   * If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup in 4.1.1 above, then return to this page.
   * Beside Mandrill Transactional Emails, click Install.
   * Review the information, then click Install.
-* Create user account that will callback from Mandrill to CiviCRM
-  * Create a user in your CMS (for example Drupal) that has the *access civicrm* permission.
-* Copy value of site key
-  * Open civicrm.settings.php (in Drupal this file is generally located at /path/to/docroot/sites/default/civicrm.settings.php) in an editor.
-  * Copy the value of CIVICRM_SITE_KEY excluding the single quotes to a convenient place to be used in the next step.
+* Setup From Email address
+  * If you have not already done so, go to:
+  * Administer >> Communications >> From Email Addresses.
+  * Enter a from address you would like to display to users for CiviCRM emails, for example, info@yourorg.org.
+* Setup Outbound Email
+  * Administer >> System Settings >> Outbound Email (SMTP/Sendmail).
+  * Click on SMTP.
+  * Enter the following:
+    * SMTP Server: smtp.mandrillapp.com
+    * SMTP Port: 587
+    * Authentication: Yes
+    * SMTP Username: (from step 1 above, e.g. mail@yourorg.org)
+    * SMTP Password: (copy and paste API Key from step 1 above, e.g. 12345678-abcd-1234-efgh-123456789012)
+  * Click Save & Send Test Email
+  * Note the value of the field Mandrill Post URL, for example by copying and pasting it into a file for use later in this setup.
+  * Check that you received the test email.
 * Configure Webhooks for Mandrill
   * To complete this step successfully, your website must be accessible from the Internet so that Mandrill can post to it. So if you are running a test site locally on your laptop that other computers cannot access, this step will fail.
   * Login or go to your Mandrill account at https://mandrillapp.com/login/
@@ -61,6 +57,6 @@ Installation instructions for Mandrill Transactional Emails
     * Message Is Opened
     * Message Is Marked As Spam
     * Message Is Rejected
-  * In Post to URL, enter the resource URL from 5 above, followed by biz.jmaconsulting.mte/CRM/Mte/Page/callback.php. For example: http://yourorg.org/civicrm/mte/callback?name=username&pass=password&key=civicrm-site-key where username and password are from step 7 above and the civicrm-site-key is from step 8 above.
+  * In Post to URL, enter the resource URL that you saved in the previous step above. For example: http://yourorg.org//civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502 where username and password are from step 7 above and the civicrm-site-key is from step 8 above.
 * Test by doing an action in CiviCRM that sends out a non-bulk email.
 
