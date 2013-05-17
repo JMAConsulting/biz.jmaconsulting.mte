@@ -99,6 +99,14 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     $this->ctx->log->info('Applying update 4202');
     // this path is relative to the extension base dir
     $this->executeSqlFile('sql/upgrade_4202.sql');
+    
+    // rebuild menu items
+    CRM_Core_Menu::store();
+    
+    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+    $url = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
+   
+    CRM_Core_Session::setStatus(ts("The URL that Mandrill needs to post to has changed during this upgrade. You need to reconfigure the webhook for Mandrill to use the following URL in Post to URL: $url"));
     return TRUE;
   } 
 
