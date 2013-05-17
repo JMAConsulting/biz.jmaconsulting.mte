@@ -64,6 +64,6 @@ Installation instructions for Mandrill Transactional Emails
   * Beside Mandrill Secret, click on Options.
   * Click edit beside Secret Code.
   * Change the value, then click Save.
-  * Navigate to Administer >> System Settings >> Outbound Email (SMTP/Sendmail), click on SMTP, copy the value of Mandrill Post URL.
+  * Navigate to Administer >> System Settings >> Outbound Email (SMTP/Sendmail), click on SMTP, copy the value of Mandrill Post URL. Note that this step is necessary since it also activates the use of this callback URL.
   * Use that new value to configure the Post to URL value of the webhook for Mandrill.
 
