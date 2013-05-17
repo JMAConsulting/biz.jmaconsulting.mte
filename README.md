@@ -25,7 +25,7 @@ Installation instructions for Mandrill Transactional Emails
   * Click Save.
 * Install Mandrill Transactional Emails extension
   * Go to Administer >> Customize Data and Screens >> Manage Extensions.
-  * If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup in 4.1.1 above, then return to this page.
+  * If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup above, then return to this page.
   * Beside Mandrill Transactional Emails, click Install.
   * Review the information, then click Install.
 * Setup From Email address
@@ -59,4 +59,11 @@ Installation instructions for Mandrill Transactional Emails
     * Message Is Rejected
   * In Post to URL, enter the resource URL that you saved in the previous step above. For example: http://yourorg.org//civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502 where username and password are from step 7 above and the civicrm-site-key is from step 8 above.
 * Test by doing an action in CiviCRM that sends out a non-bulk email.
+* This should not be necessary, but if you would like to change the secret code that is used to ensure secure communication from Mandrill to your instance of CiviCRM, you can change the secret as follows:
+  * Go to Administer > System Settings > Option Groups.
+  * Beside Mandrill Secret, click on Options.
+  * Click edit beside Secret Code.
+  * Change the value, then click Save.
+  * Navigate to Administer >> System Settings >> Outbound Email (SMTP/Sendmail), click on SMTP, copy the value of Mandrill Post URL.
+  * Use that new value to configure the Post to URL value of the webhook for Mandrill.
 
