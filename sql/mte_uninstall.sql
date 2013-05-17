@@ -60,4 +60,4 @@ AND `civicrm_activity`.`activity_type_id` = `civicrm_option_value`.`value`;
 -- MTE-14
 DELETE cg, cv FROM civicrm_option_group cg
 INNER JOIN civicrm_option_value cv ON cg.id = cv.option_group_id
-WHERE cg.name = 'Mandrill Secret';
+WHERE cg.name = 'mandrill_secret';

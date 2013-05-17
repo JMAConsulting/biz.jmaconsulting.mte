@@ -34,6 +34,9 @@ require_once 'mte.civix.php';
  */
 function mte_civicrm_config(&$config) {
   _mte_civix_civicrm_config($config);
+  if ($config->userFramework == 'Joomla' && 'civicrm/ajax/mte/callback' == $_GET['task']) {
+    $_SESSION['mte_temp'] = 1; 
+  }
 }
 
 /**
@@ -193,8 +196,7 @@ function mte_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Admin_Form_Setting_Smtp') {
     $element = $form->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
     $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
-    $config = CRM_Core_Config::singleton();
-    $default['mandril_post_url'] = $config->userFrameworkBaseURL . 'civicrm/mte/callback?mandrillSecret=' . $mandrillSecret['Secret Code'];
+    $default['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
     $form->setDefaults($default);
     $element->freeze();
   }
