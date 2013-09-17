@@ -104,6 +104,31 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 $bounce->bounce_type_id = $bounceType["Mandrill $bType"];
                 $bounce->bounce_reason  = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description');
                 $bounce->save();
+                if ($value['event'] == 'hard_bounce' || $value['event'] == 'soft_bounce') {
+                  $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+                    'mailing_backend'
+                  );
+                  if (CRM_Utils_Array::value('group_id', $mailingBackend)) {
+                    list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+                    $mailParams = array(
+                      'groupName' => 'Mandrill bounce notification',
+                      'from' => '"' . $domainEmailName . '" <' . $domainEmailAddress . '>',
+                      'subject' => 'Mandrill Bounce Notification',
+                      'text' => '',
+                      'html' => '',
+                    );
+                    $query = "SELECT ce.email, cc.sort_name FROM civicrm_contact cc
+INNER JOIN civicrm_group_contact cgc ON cgc.contact_id = cc.id
+INNER JOIN civicrm_email ce ON ce.contact_id = cc.id
+WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBackend['group_id']} AND ce.is_primary = 1;";
+                    $dao = CRM_Core_DAO::executeQuery($query);
+                    while ($dao->fetch()) {
+                      $mailParams['toName'] = $dao->sort_name;
+                      $mailParams['toEmail'] = $dao->email;
+                      CRM_Utils_Mail::send($mailParams);
+                    }
+                  }
+                }
                 break;
               }
               
