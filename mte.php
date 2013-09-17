@@ -199,5 +199,8 @@ function mte_civicrm_buildForm($formName, &$form) {
     $default['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
     $form->setDefaults($default);
     $element->freeze();
+    
+    // add select for groups
+    $form->add('select', 'group_id', ts('Group to notify'), array('' => ts('- any group -')) + CRM_Core_PseudoConstant::group());
   }
 }
