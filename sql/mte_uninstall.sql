@@ -54,7 +54,7 @@ DELETE  `civicrm_activity`, `civicrm_option_value`
 FROM `civicrm_activity`, `civicrm_option_group`, `civicrm_option_value` 
 WHERE `civicrm_option_group`.`name` = 'activity_type' 
 AND `civicrm_option_group`.`id` = `civicrm_option_value`.`option_group_id`
-AND `civicrm_option_value`.`name` = 'Mandrill Email Sent'
+AND `civicrm_option_value`.`name` IN ('Mandrill Email Sent', 'Mandrill Email Open', 'Mandrill Email Click', 'Mandrill Email Bounce')
 AND `civicrm_activity`.`activity_type_id` = `civicrm_option_value`.`value`;
 
 -- MTE-14
