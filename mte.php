@@ -118,6 +118,9 @@ function mte_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function mte_civicrm_enable() {
+  foreach (glob(__DIR__ . '/sql/*_enable.sql') as $file) {
+    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+  }
   return _mte_civix_civicrm_enable();
 }
 
@@ -125,6 +128,9 @@ function mte_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function mte_civicrm_disable() {
+  foreach (glob(__DIR__ . '/sql/*_disable.sql') as $file) {
+    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+  }
   return _mte_civix_civicrm_disable();
 }
 
