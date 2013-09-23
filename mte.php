@@ -172,9 +172,9 @@ function mte_civicrm_alterMailParams(&$params) {
       $matches = array();
       preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $params['from'], $matches);
       if (!empty($matches)) {
-        $userID = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Email', $matches[0], 'contact_id', 'email');
+        $userID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $matches[0], 'contact_id', 'email');
         if (!$userID) {
-          $userID = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Email', $params['toEmail'], 'contact_id', 'email');          
+          $userID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email');
         }
       }
     }
