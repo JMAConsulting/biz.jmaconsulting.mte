@@ -18,7 +18,7 @@
   <version>1.2</version>
   <develStage>beta</develStage>
   <compatibility>
-    <ver>4.3</ver>
+    <ver>4.2</ver>
   </compatibility>
   <url desc="Installation Instructions for 1.2beta">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.2beta/README.md</url>
   <url desc="Main Extension Page">https://github.com/JMAConsulting/biz.jmaconsulting.mte</url>
