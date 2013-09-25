@@ -118,6 +118,9 @@ function mte_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function mte_civicrm_enable() {
+  foreach (glob(__DIR__ . '/sql/*_enable.sql') as $file) {
+    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+  }
   return _mte_civix_civicrm_enable();
 }
 
@@ -125,6 +128,9 @@ function mte_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function mte_civicrm_disable() {
+  foreach (glob(__DIR__ . '/sql/*_disable.sql') as $file) {
+    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+  }
   return _mte_civix_civicrm_disable();
 }
 
@@ -159,6 +165,23 @@ function mte_civicrm_alterMailParams(&$params) {
   $session   = CRM_Core_Session::singleton();
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+  if (!$userID) {
+    $config = CRM_Core_Config::singleton();
+    if (version_compare($config->civiVersion, '4.3.alpha1') < 0) {
+      //FIX: source id for version less that 4.3
+      $matches = array();
+      preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $params['from'], $matches);
+      if (!empty($matches)) {
+        $userID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $matches[0], 'contact_id', 'email');
+        if (!$userID) {
+          $userID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email');
+        }
+      }
+    }
+    else {
+      $userID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Domain', CRM_Core_Config::domainID(), 'contact_id');
+    }
+  }
 
   $activityParams = array( 
     'source_contact_id' => $userID,
@@ -168,6 +191,7 @@ function mte_civicrm_alterMailParams(&$params) {
     'status_id' => 1,
     'priority_id' => 1,
     'version' => 3,
+    'details' => $params['html'],
   );
   $result = civicrm_api( 'activity','create',$activityParams );
   if(CRM_Utils_Array::value('id', $result)){
@@ -199,5 +223,8 @@ function mte_civicrm_buildForm($formName, &$form) {
     $default['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
     $form->setDefaults($default);
     $element->freeze();
+    
+    // add select for groups
+    $form->add('select', 'group_id', ts('Group to notify'), array('' => ts('- any group -')) + CRM_Core_PseudoConstant::group());
   }
 }

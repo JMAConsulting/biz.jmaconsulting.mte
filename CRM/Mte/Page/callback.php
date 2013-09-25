@@ -69,6 +69,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
               );
               $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
               $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
+              $assignedContacts = array();
               switch ($value['event']) {
               case 'open':
                 $oe                 = new CRM_Mailing_Event_BAO_Opened();
@@ -104,11 +105,48 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 $bounce->bounce_type_id = $bounceType["Mandrill $bType"];
                 $bounce->bounce_reason  = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description');
                 $bounce->save();
+                if (substr($value['event'], -7) == '_bounce') {
+                  $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+                    'mailing_backend'
+                  );
+                  if (CRM_Utils_Array::value('group_id', $mailingBackend)) {
+                    list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+                    $msgBody = '';
+                    if (CRM_Utils_Array::value('metadata', $value['msg']) && CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata'])) { 
+                      $msgBody = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $value['msg']['metadata']['CiviCRM_Mandrill_id'], 'details');
+                    }
+                    $mailBody = "The following email failed to be delivered due to a {$bType} Bounce :</br>
+To: {$value['msg']['email']} </br>
+From: {$value['msg']['sender']} </br>
+Subject: {$value['msg']['subject']}</br>
+Message Body: {$msgBody}" ;
+                    $mailParams = array(
+                      'groupName' => 'Mandrill bounce notification',
+                      'from' => '"' . $domainEmailName . '" <' . $domainEmailAddress . '>',
+                      'subject' => 'Mandrill Bounce Notification',
+                      'text' => $mailBody,
+                      'html' => $mailBody,
+                    );
+                    $bType = 'Bounce';
+                    $query = "SELECT ce.email, cc.sort_name, cgc.contact_id FROM civicrm_contact cc
+INNER JOIN civicrm_group_contact cgc ON cgc.contact_id = cc.id
+INNER JOIN civicrm_email ce ON ce.contact_id = cc.id
+WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBackend['group_id']} AND ce.is_primary = 1 AND ce.email <> %1";
+                    $queryParam = array(1 => array($value['msg']['email'], 'String'));
+                    $dao = CRM_Core_DAO::executeQuery($query, $queryParam);
+                    while ($dao->fetch()) {
+                      $mailParams['toName'] = $dao->sort_name;
+                      $mailParams['toEmail'] = $dao->email;
+                      CRM_Utils_Mail::send($mailParams);
+                      $assignedContacts[] = $dao->contact_id;
+                    }
+                  }
+                }
                 break;
               }
               
               // create activity for click and open event
-              if ($value['event'] == 'open' || $value['event'] == 'click') {
+              if ($value['event'] == 'open' || $value['event'] == 'click' || $bType == 'Bounce') {
                 $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
                 $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
                 if (!CRM_Utils_Array::value('contact_id', $sourceContactId['email'])) {
@@ -119,12 +157,16 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                   'activity_type_id' => array_search("Mandrill Email $bType", $activityTypes),
                   'subject' => CRM_Utils_Array::value('subject', $value['msg']) ? $value['msg']['subject'] : "Mandrill Email $bType",
                   'activity_date_time' => date('YmdHis'),
-                  'status_id' => 1,
+                  'status_id' => 2,
                   'priority_id' => 1,
                   'version' => 3,
                   'target_contact_id' => $emails['contactIds'],
                 );
-                civicrm_api( 'activity','create',$activityParams );
+                if (!empty($assignedContacts)) {
+                  $activityParams['assignee_contact_id'] = $assignedContacts;
+                  $activityParams['details'] = $mailBody;
+                }
+                civicrm_api('activity','create',$activityParams);
               }
             }
           }

@@ -40,23 +40,22 @@ ALTER TABLE `civicrm_mailing_event_queue`
 ALTER TABLE `civicrm_mailing_event_queue`
   ADD CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
 
-
 -- add new activity type
-
 SELECT @civicrm_activity_type_id := id FROM `civicrm_option_group` WHERE `name` LIKE 'activity_type';
 
 SELECT @max_val := MAX(ROUND(op.value)) FROM civicrm_option_value op WHERE op.option_group_id  = @civicrm_activity_type_id;
 SELECT @weight := MAX(weight) FROM civicrm_option_value WHERE option_group_id = @civicrm_activity_type_id;
 
-INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `weight`, `description`) 
-VALUES (@civicrm_activity_type_id, 'Mandrill Email Sent', @max_val := @max_val+1, 'Mandrill Email Sent', @weight := @weight+1, 'Mandrill Email Sent'),
-(@civicrm_activity_type_id, 'Mandrill Email Open', @max_val := @max_val+1, 'Mandrill Email Open', @weight := @weight+1, 'Mandrill Email Open'),
-(@civicrm_activity_type_id, 'Mandrill Email Click', @max_val := @max_val+1, 'Mandrill Email Click', @weight := @weight+1, 'Mandrill Email Click');
+INSERT INTO `civicrm_option_value` (`option_group_id`,  {localize field='label'}label{/localize}, `value`, `name`, `weight`,  {localize field='description'}description{/localize}, is_reserved) 
+VALUES (@civicrm_activity_type_id, {localize}'Mandrill Email Sent'{/localize}, @max_val := @max_val+1, 'Mandrill Email Sent', @weight := @weight+1, {localize}'Mandrill Email Sent'{/localize}, 1),
+(@civicrm_activity_type_id, {localize}'Mandrill Email Open'{/localize}, @max_val := @max_val+1, 'Mandrill Email Open', @weight := @weight+1, {localize}'Mandrill Email Open'{/localize}, 1),
+(@civicrm_activity_type_id, {localize}'Mandrill Email Click'{/localize}, @max_val := @max_val+1, 'Mandrill Email Click', @weight := @weight+1, {localize}'Mandrill Email Click'{/localize}, 1),
+(@civicrm_activity_type_id, {localize}'Mandrill Email Bounce'{/localize}, @max_val := @max_val+1, 'Mandrill Email Bounce', @weight := @weight+1, {localize}'Mandrill Email Bounce'{/localize}, 1);
 
 -- MTE-14 add option group Mandrill Secret
-INSERT INTO `civicrm_option_group` (name, title, description, is_reserved, is_active)
-VALUES ('mandrill_secret', 'Mandrill Secret', 'Mandrill Secret', '1', 1);
+INSERT INTO `civicrm_option_group` (name, {localize field='title'}title{/localize}, {localize field='description'}description{/localize}, is_reserved, is_active)
+VALUES ('mandrill_secret', {localize}'Mandrill Secret'{/localize}, {localize}'Mandrill Secret'{/localize}, '1', 1);
 SET @optionGroupId := LAST_INSERT_ID();
 
-INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `weight`, `description`) 
-VALUES (@optionGroupId, 'Secret Code', SUBSTRING(MD5(RAND()) FROM 1 FOR 16), 'Secret Code', 1, 'Mandrill Email Sent');
+INSERT INTO `civicrm_option_value` (`option_group_id`, {localize field='label'}`label`{/localize}, `value`, `name`, `weight`, {localize field='description'}`description`{/localize}) 
+VALUES (@optionGroupId, {localize}'Secret Code'{/localize}, SUBSTRING(MD5(RAND()) FROM 1 FOR 16), 'Secret Code', 1, {localize}'Mandrill Email Sent'{/localize});
