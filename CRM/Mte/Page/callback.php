@@ -131,8 +131,9 @@ Message Body: {$msgBody}" ;
                     $query = "SELECT ce.email, cc.sort_name, cgc.contact_id FROM civicrm_contact cc
 INNER JOIN civicrm_group_contact cgc ON cgc.contact_id = cc.id
 INNER JOIN civicrm_email ce ON ce.contact_id = cc.id
-WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBackend['group_id']} AND ce.is_primary = 1;";
-                    $dao = CRM_Core_DAO::executeQuery($query);
+WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBackend['group_id']} AND ce.is_primary = 1 AND ce.email <> %1";
+                    $queryParam = array(1 => array($value['msg']['email'], 'String'));
+                    $dao = CRM_Core_DAO::executeQuery($query, $queryParam);
                     while ($dao->fetch()) {
                       $mailParams['toName'] = $dao->sort_name;
                       $mailParams['toEmail'] = $dao->email;
