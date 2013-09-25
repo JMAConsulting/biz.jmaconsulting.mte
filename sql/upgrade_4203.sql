@@ -34,4 +34,4 @@ SELECT @max_val := MAX(ROUND(op.value)) FROM civicrm_option_value op WHERE op.op
 SELECT @weight := MAX(weight) FROM civicrm_option_value WHERE option_group_id = @civicrm_activity_type_id;
 
 INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `weight`, `description`, is_reserved) 
-(@civicrm_activity_type_id, 'Mandrill Email Bounce', @max_val+1, 'Mandrill Email Bounce', @weight+1, 'Mandrill Email Bounce', 1);
+VALUES (@civicrm_activity_type_id, 'Mandrill Email Bounce', @max_val+1, 'Mandrill Email Bounce', @weight+1, 'Mandrill Email Bounce', 1);
