@@ -19,9 +19,9 @@
   <releaseDate>2013-09-25</releaseDate>
   <version>1.2</version>
   <compatibility>
-    <ver>4.2.x</ver>
-    <ver>4.3.x</ver>
-    <ver>4.4.x</ver>
+    <ver>4.2</ver>
+    <ver>4.3</ver>
+    <ver>4.4</ver>
   </compatibility>
   <comments>As of version 4.2.x, CiviCRM provides bounce processing only for bulk emails sent through the CiviMail component. Your domain's email reputation may suffer from your transactional emails - everything sent that doesn't go through CiviMai - bouncing or being marked as spam. In addition, there is no click-through tracking for transactional, non-CiviMail emails. This extension addresses both issues by integrating CiviCRM's transactional emails with an external service called Mandrill. If you use both this Mandrill Transactional Emails extension and the CiviMail component, all of your outbound email will be processed in a CAN-SPAM compliant manner.
 Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery.
