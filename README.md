@@ -41,6 +41,7 @@ Installation instructions for Mandrill Transactional Emails
     * Authentication: Yes
     * SMTP Username: (from first step above, e.g. mail@yourorg.org)
     * SMTP Password: (copy and paste API Key from first step above, e.g. 12345678-abcd-1234-efgh-123456789012)
+  * Select group to notify all members in group if mail is bounced.
   * Click Save & Send Test Email
   * Note the value of the field Mandrill Post URL, for example by copying and pasting it into a file for use later in this setup.
   * Check that you received the test email.
