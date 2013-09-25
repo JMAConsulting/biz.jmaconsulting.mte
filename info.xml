@@ -9,7 +9,7 @@
     <url desc="Main Extension Page">
       https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
     </url>
-    <url desc="Installation Instructions for 1.2">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.2beta/README.md</url>
+    <url desc="Installation Instructions for 1.2">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.2/README.md</url>
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
