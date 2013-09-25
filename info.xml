@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension key="biz.jmaconsulting.mte" type="module">
-  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v1.2beta.zip</downloadUrl>
+  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v1.2.zip</downloadUrl>
   <file>mte</file>
   <name>Mandrill Transactional Emails</name>
   <description>MTE: Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs.</description>
