@@ -50,7 +50,7 @@ ALTER TABLE `civicrm_mailing_bounce_type`
     CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
 
 -- Delete all the activities and 'Mandrill Email Sent' activity type
-DELETE civicrm_activity, civicrm_option_value FROM civicrm_option_group
+DELETE civicrm_activity.*, civicrm_option_value.* FROM civicrm_option_group
 LEFT JOIN civicrm_option_value ON  `civicrm_option_group`.`id` = `civicrm_option_value`.`option_group_id`
 LEFT JOIN civicrm_activity ON civicrm_activity.activity_type_id = civicrm_option_value.value
 WHERE `civicrm_option_group`.`name` = 'activity_type' 
