@@ -107,7 +107,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 $bounce->save();
                 if (substr($value['event'], -7) == '_bounce') {
                   $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
-                    'mailing_backend'
+                    'mandrill_smtp_settings'
                   );
                   if (CRM_Utils_Array::value('group_id', $mailingBackend)) {
                     list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();

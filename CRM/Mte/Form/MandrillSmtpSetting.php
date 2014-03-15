@@ -24,14 +24,11 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
     $this->add('submit', $this->_testButtonName, ts('Save & Send Test Email'));
     $this->add('checkbox', 'is_active', ts('Enabled?'));
     
-    $element = $form->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
-    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
-    $default['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
-    $form->setDefaults($default);
+    $element = $this->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
     $element->freeze();
     
     // add select for groups
-    $form->add('select', 'group_id', ts('Group to notify'), array('' => ts('- any group -')) + CRM_Core_PseudoConstant::group());
+    $this->add('select', 'group_id', ts('Group to notify'), array('' => ts('- any group -')) + CRM_Core_PseudoConstant::group());
     $this->addFormRule(array('CRM_Mte_Form_MandrillSmtpSetting', 'formRule'));
     parent::buildQuickForm();
   }
@@ -168,6 +165,9 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
           $this->_defaults['smtpPassword'] = CRM_Utils_Crypt::decrypt($this->_defaults['smtpPassword']);
         }
       }
+      $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+      $this->_defaults['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', 
+        "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
     }
     return $this->_defaults;
   }
