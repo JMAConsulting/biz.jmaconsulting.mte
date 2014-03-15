@@ -41,6 +41,14 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
       $reponse = json_decode($_POST['mandrill_events'], TRUE);
       if (is_array($reponse)) {
         $events = array('open','click','hard_bounce','soft_bounce','spam','reject');
+        //MTE-17
+        $civiVersion = CRM_Core_Config::singleton()->civiVersion;
+        if (version_compare('4.4alpha1', $civiVersion) > 0) {
+          $jobCLassName = 'CRM_Mailing_DAO_Job';
+        }
+        else {
+          $jobCLassName = 'CRM_Mailing_DAO_MailingJob';    
+        }
         foreach ($reponse as $value) {
           //changes done to check if email exists in response array
           if (in_array($value['event'], $events) && CRM_Utils_Array::value('email', $value['msg'])) {
@@ -61,8 +69,9 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
               if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
                 continue;
               }
+              
               $params = array(
-                'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Job', $mail->id, 'id', 'mailing_id'),
+                'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
                 'contact_id' => $emails['email']['contact_id'],
                 'email_id' => $emails['email']['id'],
                 'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
