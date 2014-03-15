@@ -33,13 +33,6 @@ ALTER TABLE `civicrm_mailing_bounce_type`
     'Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject' ) 
     CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
 
--- Add column in civicrm_mailing_event_queue as activity_id of type email 
-ALTER TABLE `civicrm_mailing_event_queue` 
-  ADD `activity_id` INT UNSIGNED NULL DEFAULT NULL COMMENT 'Activity id of activity type email and bulk mail.';
-
-ALTER TABLE `civicrm_mailing_event_queue`
-  ADD CONSTRAINT `FK_civicrm_mailing_event_queue_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`);
-
 -- add new activity type
 SELECT @civicrm_activity_type_id := id FROM `civicrm_option_group` WHERE `name` LIKE 'activity_type';
 
@@ -67,3 +60,17 @@ SELECT @maxWeight := max(weight) + 1 FROM civicrm_navigation WHERE parent_id = @
 
 INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
 VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, 2, @maxWeight);
+
+-- MTE-19
+CREATE TABLE IF NOT EXISTS `civicrm_mandrill_activity` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mailing_queue_id` int(10) unsigned NOT NULL COMMENT 'FK to Mailing Queue',
+  `activity_id` int(10) unsigned DEFAULT NULL COMMENT 'FK to Activity',
+  PRIMARY KEY (`id`),
+  KEY `FK_civicrm_mandrill_activity_mailing_queue_id` (`mailing_queue_id`),
+  KEY `FK_civicrm_mandrill_activity_activity_id` (`activity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+ALTER TABLE `civicrm_mandrill_activity`
+  ADD CONSTRAINT `FK_civicrm_mandrill_activity_mailing_queue_id` FOREIGN KEY (`mailing_queue_id`) REFERENCES `civicrm_mailing_event_queue` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_civicrm_mandrill_activity_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`) ON DELETE CASCADE;
