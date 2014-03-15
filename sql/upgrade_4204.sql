@@ -25,15 +25,10 @@
  *          Toronto, ON  
  *          Canada   M5T 2C7
  */
--- enable activity type
-UPDATE civicrm_option_value cov
-INNER JOIN civicrm_option_group cog ON cog.id = cov.option_group_id
-SET cov.is_active = 1
-WHERE cog.name IN ('activity_type', 'mandrill_secret') AND cov.name IN('Mandrill Email Bounce', 'Mandrill Email Click', 'Mandrill Email Open', 'Mandrill Email Sent','Secret Code');
-
-UPDATE civicrm_option_group
-SET is_active = 1
-WHERE name  = 'mandrill_secret';
-
 -- MTE-18
-UPDATE civicrm_navigation SET is_active = 1 WHERE name = 'mandrill_smtp_settings';
+SELECT @civimail := id FROM civicrm_navigation WHERE name = 'CiviMail';
+
+SELECT @maxWeight := max(weight) + 1 FROM civicrm_navigation WHERE parent_id = @civimail;
+
+INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
+VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, 2, @maxWeight);

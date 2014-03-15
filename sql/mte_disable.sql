@@ -34,3 +34,6 @@ WHERE cog.name IN ('activity_type', 'mandrill_secret') AND cov.name IN('Mandrill
 UPDATE civicrm_option_group
 SET is_active = 0
 WHERE name  = 'mandrill_secret';
+
+-- MTE-18
+UPDATE civicrm_navigation SET is_active = 0 WHERE name = 'mandrill_smtp_settings';

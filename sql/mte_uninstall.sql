@@ -60,3 +60,6 @@ AND `civicrm_option_value`.`name` IN ('Mandrill Email Sent', 'Mandrill Email Ope
 DELETE cg, cv FROM civicrm_option_group cg
 INNER JOIN civicrm_option_value cv ON cg.id = cv.option_group_id
 WHERE cg.name = 'mandrill_secret';
+
+-- MTE-18
+DELETE FROM civicrm_navigation  WHERE name = 'mandrill_smtp_settings';
