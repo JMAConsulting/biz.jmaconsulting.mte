@@ -59,3 +59,11 @@ SET @optionGroupId := LAST_INSERT_ID();
 
 INSERT INTO `civicrm_option_value` (`option_group_id`, {localize field='label'}`label`{/localize}, `value`, `name`, `weight`, {localize field='description'}`description`{/localize}) 
 VALUES (@optionGroupId, {localize}'Secret Code'{/localize}, SUBSTRING(MD5(RAND()) FROM 1 FOR 16), 'Secret Code', 1, {localize}'Mandrill Email Sent'{/localize});
+
+-- MTE-18
+SELECT @civimail := id FROM civicrm_navigation WHERE name = 'CiviMail';
+
+SELECT @maxWeight := max(weight) + 1 FROM civicrm_navigation WHERE parent_id = @civimail;
+
+INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
+VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, 2, @maxWeight);

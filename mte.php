@@ -158,6 +158,30 @@ function mte_civicrm_managed(&$entities) {
 }
 
 /**
+ * Implementation of hook_civicrm_alterMailer( )
+ * To alter mailer settings i.e use mandrill smtp settings for transactional mails
+ */
+function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
+  $isTransactionalMail = CRM_Core_Smarty::singleton()->get_template_vars('isTransactionalMail', 1);
+
+  if ($isTransactionalMail) {
+    $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+      'mandrill_smtp_settings'
+    );
+  
+    if (CRM_Utils_array::value('is_active', $mailingBackend)) {
+      $params['host'] = $mailingBackend['smtpServer'];
+      $params['port'] = $mailingBackend['smtpPort'];
+      $params['username'] = trim($mailingBackend['smtpUsername']);
+      $params['password'] = CRM_Utils_Crypt::decrypt($mailingBackend['smtpPassword']);
+      $params['auth'] = ($mailingBackend['smtpAuth']) ? TRUE : FALSE;
+      $mailer = Mail::factory('smtp', $params);
+      CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 0);
+    }
+  } 
+}
+
+/**
  * Implementation of hook_civicrm_alterMailParams( )
  * To send headers in mail and also create activity
  */
@@ -197,6 +221,7 @@ function mte_civicrm_alterMailParams(&$params) {
   if(CRM_Utils_Array::value('id', $result)){
     $params['activityId'] = $result['id'];
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "'.$result['id'].'" }';
+    CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 1);
   }
 }
 
@@ -213,18 +238,5 @@ function mte_civicrm_postEmailSend(&$params) {
       'target_contact_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email'), 
     );
     $result = civicrm_api( 'activity','create',$activityParams );
-  }
-}
-
-function mte_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Admin_Form_Setting_Smtp') {
-    $element = $form->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
-    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
-    $default['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
-    $form->setDefaults($default);
-    $element->freeze();
-    
-    // add select for groups
-    $form->add('select', 'group_id', ts('Group to notify'), array('' => ts('- any group -')) + CRM_Core_PseudoConstant::group());
   }
 }

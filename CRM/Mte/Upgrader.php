@@ -111,6 +111,36 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
   } 
 
   /**
+   * Example: Run an external SQL script
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4204() {
+    $this->ctx->log->info('Applying update 4204');
+    // this path is relative to the extension base dir
+    $this->executeSqlFile('sql/upgrade_4204.sql');
+    
+    // rebuild menu items
+    CRM_Core_Menu::store();
+    $params = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+      'mailing_backend'
+    );
+    
+    if ($params['outBound_option'] == 0 
+      && CRM_Utils_Array::value('smtpServer', $params) == 'smtp.mandrillapp.com') {
+      unset($params['qfKey'], $params['entryURL'], $params['sendmail_path'], $params['sendmail_args'], $params['outBound_option']);
+      $params['is_active'] = 1;
+      CRM_Core_BAO_Setting::setItem($params,
+        CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+        'mandrill_smtp_settings'
+      );
+      CRM_Core_Session::setStatus(ts(""));
+    }
+    return TRUE;
+  } 
+
+  /**
    * Example: Run a slow upgrade process by breaking it up into smaller chunk
    *
    * @return TRUE on success

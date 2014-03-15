@@ -6,4 +6,10 @@
     <access_callback>1</access_callback>
     <title>callback</title>
   </item>
+  <item>
+    <path>civicrm/mte/smtp</path>
+    <page_callback>CRM_Mte_Form_MandrillSmtpSetting</page_callback>
+    <title>MandrillSmtpSetting</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
