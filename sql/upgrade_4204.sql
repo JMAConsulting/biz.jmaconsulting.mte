@@ -32,3 +32,32 @@ SELECT @maxWeight := max(weight) + 1 FROM civicrm_navigation WHERE parent_id = @
 
 INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
 VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, 2, @maxWeight);
+
+-- MTE-19
+CREATE TABLE IF NOT EXISTS `civicrm_mandrill_activity` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mailing_queue_id` int(10) unsigned NOT NULL COMMENT 'FK to Mailing Queue',
+  `activity_id` int(10) unsigned DEFAULT NULL COMMENT 'FK to Activity',
+  PRIMARY KEY (`id`),
+  KEY `FK_civicrm_mandrill_activity_mailing_queue_id` (`mailing_queue_id`),
+  KEY `FK_civicrm_mandrill_activity_activity_id` (`activity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+ALTER TABLE `civicrm_mandrill_activity`
+  ADD CONSTRAINT `FK_civicrm_mandrill_activity_mailing_queue_id` FOREIGN KEY (`mailing_queue_id`) REFERENCES `civicrm_mailing_event_queue` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_civicrm_mandrill_activity_activity_id` FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity` (`id`) ON DELETE CASCADE;
+
+-- move activity_id to new table from civicrm_mailing_event_queue
+INSERT INTO civicrm_mandrill_activity (mailing_queue_id, activity_id)
+SELECT cq.id, cq.activity_id FROM civicrm_mailing_event_queue cq
+INNER JOIN civicrm_mailing_job cb ON cb.id = cq.job_id
+WHERE cb.job_type = "Special: All transactional emails being sent through Mandrill" AND activity_id IS NOT NULL;
+
+-- Drop column in civicrm_mailing_event_queue as activity_id of type email 
+ALTER TABLE `civicrm_mailing_event_queue`
+DROP FOREIGN KEY FK_civicrm_mailing_event_queue_activity_id,
+DROP INDEX FK_civicrm_mailing_event_queue_activity_id;
+
+-- Drop activity_id column
+ALTER TABLE `civicrm_mailing_event_queue` 
+  DROP `activity_id`;

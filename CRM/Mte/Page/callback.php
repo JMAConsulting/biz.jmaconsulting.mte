@@ -74,16 +74,22 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
                 'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
                 'contact_id' => $emails['email']['contact_id'],
                 'email_id' => $emails['email']['id'],
-                'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
               );
               $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
+              if ($eventQueue->id) {
+                $mandrillActivtyParams = array(
+                  'mailing_queue_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
+                  'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
+                );
+                CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
+              }
               $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
               $assignedContacts = array();
               switch ($value['event']) {
               case 'open':
-                $oe                 = new CRM_Mailing_Event_BAO_Opened();
+                $oe = new CRM_Mailing_Event_BAO_Opened();
                 $oe->event_queue_id = $eventQueue->id;
-                $oe->time_stamp     = date('YmdHis', $value['ts']);
+                $oe->time_stamp = date('YmdHis', $value['ts']);
                 $oe->save();
                 break;
                 

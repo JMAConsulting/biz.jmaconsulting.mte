@@ -25,16 +25,6 @@
  *          Toronto, ON  
  *          Canada   M5T 2C7
  */
-
--- Drop column in civicrm_mailing_event_queue as activity_id of type email 
-ALTER TABLE `civicrm_mailing_event_queue`
-DROP FOREIGN KEY FK_civicrm_mailing_event_queue_activity_id,
-DROP INDEX FK_civicrm_mailing_event_queue_activity_id;
-
--- Drop activity_id column
-ALTER TABLE `civicrm_mailing_event_queue` 
-  DROP `activity_id`;
-
 -- Delete data for mandrill extensions
 DELETE FROM `civicrm_mailing` 
 WHERE `civicrm_mailing`.`subject` = '***All Transactional Emails***' AND `civicrm_mailing`.`url_tracking` = 1 AND `civicrm_mailing`.`forward_replies` = 0 AND `civicrm_mailing`.`auto_responder` = 0
@@ -63,3 +53,6 @@ WHERE cg.name = 'mandrill_secret';
 
 -- MTE-18
 DELETE FROM civicrm_navigation  WHERE name = 'mandrill_smtp_settings';
+
+-- MTE-19
+DROP TABLE IF EXISTS civicrm_mandrill_activity;
