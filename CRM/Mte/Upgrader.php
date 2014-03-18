@@ -109,6 +109,18 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     CRM_Core_Session::setStatus(ts("The URL that Mandrill needs to post to has changed during this upgrade. You need to reconfigure the webhook for Mandrill to use the following URL in Post to URL: $url"));
     return TRUE;
   } 
+  /**
+   * Example: Run an external SQL script
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4203() {
+    $this->ctx->log->info('Applying update 4203');
+    // this path is relative to the extension base dir
+    $this->executeSqlFile('sql/upgrade_4203.sql');
+    return TRUE;
+  } 
 
   /**
    * Example: Run an external SQL script
