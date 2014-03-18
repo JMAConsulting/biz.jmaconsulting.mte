@@ -67,7 +67,14 @@ function mte_civicrm_install() {
 
   //add entry in civicrm_mailing_job
   //MTE-17
-  $civiVersion = CRM_Core_Config::singleton()->civiVersion;
+  $config = CRM_Core_Config::singleton();
+  if (property_exists($config, 'civiVersion')) {
+    $civiVersion = $config->civiVersion;
+  }
+  else {
+    $civiVersion = CRM_Core_BAO_Domain::version();
+  }
+  
   if (version_compare('4.4alpha1', $civiVersion) > 0) {
     $jobCLassName = 'CRM_Mailing_DAO_Job';
   }
