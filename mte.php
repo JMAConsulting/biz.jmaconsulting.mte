@@ -173,20 +173,24 @@ function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
   $isTransactionalMail = CRM_Core_Smarty::singleton()->get_template_vars('isTransactionalMail', 1);
 
   if ($isTransactionalMail) {
-    $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
-      'mandrill_smtp_settings'
-    );
-  
-    if (CRM_Utils_array::value('is_active', $mailingBackend)) {
-      $params['host'] = $mailingBackend['smtpServer'];
-      $params['port'] = $mailingBackend['smtpPort'];
-      $params['username'] = trim($mailingBackend['smtpUsername']);
-      $params['password'] = CRM_Utils_Crypt::decrypt($mailingBackend['smtpPassword']);
-      $params['auth'] = ($mailingBackend['smtpAuth']) ? TRUE : FALSE;
-      $mailer = Mail::factory('smtp', $params);
-      CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 0);
-    }
+    mte_getmailer($mailer, $params);    
   } 
+}
+
+function mte_getmailer(&$mailer, &$params = array()) {
+  $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+    'mandrill_smtp_settings'
+  );
+  
+  if (CRM_Utils_array::value('is_active', $mailingBackend)) {
+    $params['host'] = $mailingBackend['smtpServer'];
+    $params['port'] = $mailingBackend['smtpPort'];
+    $params['username'] = trim($mailingBackend['smtpUsername']);
+    $params['password'] = CRM_Utils_Crypt::decrypt($mailingBackend['smtpPassword']);
+    $params['auth'] = ($mailingBackend['smtpAuth']) ? TRUE : FALSE;
+    $mailer = Mail::factory('smtp', $params);
+    CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 0);
+  }
 }
 
 /**
@@ -230,6 +234,10 @@ function mte_civicrm_alterMailParams(&$params) {
     $params['activityId'] = $result['id'];
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "'.$result['id'].'" }';
     CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 1);
+    if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
+      $mailer = & CRM_Core_Config::getMailer();
+      mte_getmailer($mailer);
+    }
   }
 }
 
