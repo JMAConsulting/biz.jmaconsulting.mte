@@ -26,12 +26,16 @@
  *          Canada   M5T 2C7
  */
 -- MTE-18
-SELECT @civimail := id FROM civicrm_navigation WHERE name = 'CiviMail';
+SELECT @civimail := id FROM civicrm_navigation WHERE name = 'System Settings';
 
-SELECT @maxWeight := max(weight) + 1 FROM civicrm_navigation WHERE parent_id = @civimail;
+SELECT @outbound_mail := weight FROM civicrm_navigation WHERE parent_id = @civimail and name = 'Outbound Email';
+
+UPDATE civicrm_navigation 
+SET weight = weight + 1
+WHERE parent_id = @civimail and weight > @outbound_mail;
 
 INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
-VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, 2, @maxWeight);
+VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, NULL, @outbound_mail + 1);
 
 -- MTE-19
 CREATE TABLE IF NOT EXISTS `civicrm_mandrill_activity` (

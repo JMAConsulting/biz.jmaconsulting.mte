@@ -33,7 +33,7 @@ Installation instructions for Mandrill Transactional Emails
   * Administer >> Communications >> From Email Addresses.
   * Enter a from address you would like to display to users for CiviCRM emails, for example, info@yourorg.org.
 * Setup Outbound Email
-  * Administer >> CiviMail >> Mandrill Smtp Settings.
+  * Administer >> System Settings >> Mandrill Smtp Settings.
   * Enter the following:
     * SMTP Server: smtp.mandrillapp.com
     * SMTP Port: 587
@@ -63,6 +63,6 @@ Installation instructions for Mandrill Transactional Emails
   * Beside Mandrill Secret, click on Options.
   * Click edit beside Secret Code.
   * Change the value, then click Save.
-  * Navigate to Administer >> CiviMail >> Mandrill Smtp Settings, click on SMTP, copy the value of Mandrill Post URL. Note that this step is necessary since it also activates the use of this callback URL.
+  * Navigate to Administer >> System Settings >> Mandrill Smtp Settings, click on SMTP, copy the value of Mandrill Post URL. Note that this step is necessary since it also activates the use of this callback URL.
   * Use that new value to configure the Post to URL value of the webhook for Mandrill.
 
