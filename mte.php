@@ -208,6 +208,7 @@ function mte_civicrm_alterMailParams(&$params) {
   $session   = CRM_Core_Session::singleton();
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+  $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
   if (!$userID) {
     $config = CRM_Core_Config::singleton();
     if (version_compare($config->civiVersion, '4.3.alpha1') < 0) {
