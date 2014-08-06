@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Biz.jmaconsulting.mte : Mandrill Transactional Emails Extension for CiviCRM">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Biz.jmaconsulting.mte</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/JMAConsulting/biz.jmaconsulting.mte">View on GitHub</a>
+
+          <h1 id="project_title">Biz.jmaconsulting.mte</h1>
+          <h2 id="project_tagline">Mandrill Transactional Emails Extension for CiviCRM</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/JMAConsulting/biz.jmaconsulting.mte/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/JMAConsulting/biz.jmaconsulting.mte/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="bizjmaconsultingmte-version-12-for-civicrm-42-43-44" class="anchor" href="#bizjmaconsultingmte-version-12-for-civicrm-42-43-44"><span class="octicon octicon-link"></span></a>biz.jmaconsulting.mte version 1.2 for CiviCRM 4.2, 4.3, 4.4</h1>
+
+<p>Mandrill Transactional Emails</p>
+
+<p>See <a href="https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29">https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29</a></p>
+
+<h1>
+<a name="installation-instructions-for-mandrill-transactional-emails" class="anchor" href="#installation-instructions-for-mandrill-transactional-emails"><span class="octicon octicon-link"></span></a>Installation instructions for Mandrill Transactional Emails</h1>
+
+<ul>
+<li>Setup Mandrill
+
+<ul>
+<li>Register for or login to your Mandrill account at <a href="https://mandrillapp.com/login/">https://mandrillapp.com/login/</a>
+</li>
+<li>Create API key as follows:</li>
+<li>Click on Settings (Gear icon top-right) &gt;&gt; SMTP &amp; API Credentials.</li>
+<li>Click +New API Key</li>
+<li>Note SMTP Credentials, or leave window tab open for a few steps.</li>
+</ul>
+</li>
+<li>Setup Extensions Directory 
+
+<ul>
+<li>If you have not already done so, go to Administer &gt;&gt; System Settings &gt;&gt; Directories
+
+<ul>
+<li>Set an appropriate value for CiviCRM Extensions Directory. For example, for Drupal, /path/to/drupalroot/sites/all/modules/Extensions/</li>
+<li>In a different window, ensure the directory exists and is readable by your web server process.</li>
+</ul>
+</li>
+<li>Click Save.</li>
+</ul>
+</li>
+<li>Setup Extensions Resources URL
+
+<ul>
+<li>If you have not already done so, go to Administer &gt;&gt; System Settings &gt;&gt; Resource URLs
+
+<ul>
+<li>Beside Extension Resource URL, enter an appropriate values such as <a href="http://yourorg.org/sites/all/modules/Extensions/">http://yourorg.org/sites/all/modules/Extensions/</a>
+</li>
+</ul>
+</li>
+<li>Click Save.</li>
+</ul>
+</li>
+<li>Install Mandrill Transactional Emails extension
+
+<ul>
+<li>Go to Administer &gt;&gt; Customize Data and Screens &gt;&gt; Manage Extensions.</li>
+<li>If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup above, then return to this page.</li>
+<li>Beside Mandrill Transactional Emails, click Install.</li>
+<li>Review the information, then click Install.</li>
+</ul>
+</li>
+<li>Setup From Email address
+
+<ul>
+<li>If you have not already done so, go to:</li>
+<li>Administer &gt;&gt; Communications &gt;&gt; From Email Addresses.</li>
+<li>Enter a from address you would like to display to users for CiviCRM emails, for example, <a href="mailto:info@yourorg.org">info@yourorg.org</a>.</li>
+</ul>
+</li>
+<li>Setup Outbound Email
+
+<ul>
+<li>Administer &gt;&gt; System Settings &gt;&gt; Mandrill Smtp Settings.</li>
+<li>Enter the following:
+
+<ul>
+<li>SMTP Server: smtp.mandrillapp.com</li>
+<li>SMTP Port: 587</li>
+<li>Authentication: Yes</li>
+<li>SMTP Username: (from first step above, e.g. <a href="mailto:mail@yourorg.org">mail@yourorg.org</a>)</li>
+<li>SMTP Password: (copy and paste API Key from first step above, e.g. 12345678-abcd-1234-efgh-123456789012)</li>
+</ul>
+</li>
+<li>Click Save &amp; Send Test Email</li>
+<li>Note the value of the field Mandrill Post URL, for example by copying and pasting it into a file for use later in this setup.</li>
+<li>Check that you received the test email.</li>
+</ul>
+</li>
+<li>Configure Webhooks for Mandrill
+
+<ul>
+<li>To complete this step successfully, your website must be accessible from the Internet so that Mandrill can post to it. So if you are running a test site locally on your laptop that other computers cannot access, this step will fail.</li>
+<li>Login or go to your Mandrill account at <a href="https://mandrillapp.com/login/">https://mandrillapp.com/login/</a>
+</li>
+<li>Click on Settings (ie the Gear icon on the top-right) &gt;&gt; Webhooks</li>
+<li>Click on +Add a Webhook</li>
+<li>Click to enable all entries <em>except</em> Message Is Sent, including
+
+<ul>
+<li>Message Is Soft-bounced</li>
+<li>Message Is Clicked</li>
+<li>Message Recipient Unsubscribe</li>
+<li>Message Is Bounced</li>
+<li>Message Is Opened</li>
+<li>Message Is Marked As Spam</li>
+<li>Message Is Rejected</li>
+</ul>
+</li>
+<li>In Post to URL, enter the resource URL that you saved in the previous step above. For example: <a href="http://yourorg.org/civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502">http://yourorg.org/civicrm/ajax/mte/callback?mandrillSecret=108d3af8a77fc502</a> </li>
+</ul>
+</li>
+<li>Test by doing an action in CiviCRM that sends out a non-bulk email.</li>
+<li>This should not be necessary, but if you would like to change the secret code that is used to ensure secure communication from Mandrill to your instance of CiviCRM, you can change the secret as follows:
+
+<ul>
+<li>Go to Administer &gt; System Settings &gt; Option Groups.</li>
+<li>Beside Mandrill Secret, click on Options.</li>
+<li>Click edit beside Secret Code.</li>
+<li>Change the value, then click Save.</li>
+<li>Navigate to Administer &gt;&gt; System Settings &gt;&gt; Mandrill Smtp Settings, click on SMTP, copy the value of Mandrill Post URL. Note that this step is necessary since it also activates the use of this callback URL.</li>
+<li>Use that new value to configure the Post to URL value of the webhook for Mandrill.</li>
+</ul>
+</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Biz.jmaconsulting.mte maintained by <a href="https://github.com/JMAConsulting">JMAConsulting</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
