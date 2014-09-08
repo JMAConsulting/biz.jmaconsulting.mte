@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension key="biz.jmaconsulting.mte" type="module">
-  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v1.3.zip</downloadUrl>
+  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v1.4.zip</downloadUrl>
   <file>mte</file>
   <name>Mandrill Transactional Emails</name>
   <description>MTE: Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs.</description>
@@ -9,7 +9,7 @@
     <url desc="Main Extension Page">
       https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
     </url>
-    <url desc="Installation Instructions for 1.3">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.3/README.md</url>
+    <url desc="Installation Instructions for 1.4">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.3/README.md</url>
     <url desc="Documentation">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/1.3/README.md</url>
   </urls>
   <license>AGPL-3.0</license>
@@ -17,13 +17,14 @@
     <author>JMA Consulting</author>
     <email>joe.murray@jmaconsulting.biz</email>
   </maintainer>
-  <releaseDate>2014-05-10</releaseDate>
-  <version>1.3</version>  
+  <releaseDate>2014-09-09</releaseDate>
+  <version>1.4</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.2</ver>
     <ver>4.3</ver>
     <ver>4.4</ver>
+    <ver>4.5</ver>
   </compatibility>
   <comments>As of version 4.2.x, CiviCRM provides bounce processing only for bulk emails sent through the CiviMail component. Your domain's email reputation may suffer from your transactional emails - everything sent that doesn't go through CiviMai - bouncing or being marked as spam. In addition, there is no click-through tracking for transactional, non-CiviMail emails. This extension addresses both issues by integrating CiviCRM's transactional emails with an external service called Mandrill. If you use both this Mandrill Transactional Emails extension and the CiviMail component, all of your outbound email will be processed in a CAN-SPAM compliant manner.
 Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery.
