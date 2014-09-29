@@ -111,10 +111,27 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
       );
       
       $mailer = Mail::factory($mailerName, $params);
-      
-      CRM_Core_Error::ignoreException();
+      $config = CRM_Core_Config::singleton();
+      if (property_exists($config, 'civiVersion')) {
+        $civiVersion = $config->civiVersion;
+      }
+      else {
+        $civiVersion = CRM_Core_BAO_Domain::version();
+      }
+      if (version_compare('4.5alpha1', $civiVersion) > 0) {
+        CRM_Core_Error::ignoreException();
+      }
+      else {
+        $errorScope = CRM_Core_TemporaryErrorScope::ignoreException();
+      }
       $result = $mailer->send($toEmail, $headers, $message);
-      CRM_Core_Error::setCallback();
+      
+      if (version_compare('4.5alpha1', $civiVersion) > 0) {
+        CRM_Core_Error::setCallback();
+      }
+      else {
+        unset($errorScope);
+      }
       if (!is_a($result, 'PEAR_Error')) {
         CRM_Core_Session::setStatus($testMailStatusMsg . ts('Your %1 settings are correct. A test email has been sent to your email address.', array(1 => strtoupper($mailerName))), ts("Mail Sent"), "success");
       }
