@@ -84,7 +84,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
               $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
               if ($eventQueue->id) {
                 $mandrillActivtyParams = array(
-                  'mailing_queue_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
+                  'mailing_queue_id' => $eventQueue->id,
                   'activity_id' => CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null
                 );
                 CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
