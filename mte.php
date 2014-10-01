@@ -255,11 +255,19 @@ function mte_civicrm_alterMailParams(&$params) {
  */
 function mte_civicrm_postEmailSend(&$params) {
   if(CRM_Utils_Array::value('activityId', $params)){
+    $targetContactID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email');
+    if (!$targetContactID) {
+      $result = civicrm_api3('contact', 'create', array(
+        'contact_type' => 'Individual',
+        'email' => $params['toEmail'],
+      ));
+      $targetContactID = $result['id'];
+    }
     $activityParams = array( 
       'id' => $params['activityId'],
       'status_id' => 2,
       'version' => 3,
-      'target_contact_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email'), 
+      'target_contact_id' => $targetContactID, 
     );
     $result = civicrm_api( 'activity','create',$activityParams );
   }
