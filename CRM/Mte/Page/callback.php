@@ -4,7 +4,7 @@
  * Mandrill Transactional Email extension integrates CiviCRM's non-bulk email 
  * with the Mandrill service
  * 
- * Copyright (C) 2012 JMA Consulting
+ * Copyright (C) 2012-2014 JMA Consulting
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
