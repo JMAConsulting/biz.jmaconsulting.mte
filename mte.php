@@ -34,7 +34,8 @@ require_once 'mte.civix.php';
  */
 function mte_civicrm_config(&$config) {
   _mte_civix_civicrm_config($config);
-  if ($config->userFramework == 'Joomla' && 'civicrm/ajax/mte/callback' == JFactory::getApplication()->input->get('task')) {
+  if ($config->userFramework == 'Joomla' 
+    && 'civicrm/ajax/mte/callback' == CRM_Utils_Array::value('task', $_REQUEST)) {
     $_SESSION['mte_temp'] = 1; 
   }
 }
