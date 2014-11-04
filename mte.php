@@ -127,6 +127,7 @@ function mte_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function mte_civicrm_uninstall() {
+  enableDisableNavigationMenu(2);
   return _mte_civix_civicrm_uninstall();
 }
 
@@ -134,9 +135,7 @@ function mte_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function mte_civicrm_enable() {
-  foreach (glob(__DIR__ . '/sql/*_enable.sql') as $file) {
-    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
-  }
+  enableDisableNavigationMenu(1);
   return _mte_civix_civicrm_enable();
 }
 
@@ -144,9 +143,7 @@ function mte_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function mte_civicrm_disable() {
-  foreach (glob(__DIR__ . '/sql/*_disable.sql') as $file) {
-    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
-  }
+  enableDisableNavigationMenu(0);  
   return _mte_civix_civicrm_disable();
 }
 
@@ -271,5 +268,55 @@ function mte_civicrm_postEmailSend(&$params) {
       'target_contact_id' => $targetContactID, 
     );
     $result = civicrm_api( 'activity','create',$activityParams );
+  }
+}
+
+/**
+ * MTE-18 and MTE-38
+ * function to disable/enable/delete navigation menu
+ *
+ * @param integer $action 
+ *
+ */
+
+function enableDisableNavigationMenu($action) {
+  $domainID = CRM_Core_Config::domainID();
+  
+  if ($action < 2) { 
+    CRM_Core_DAO::executeQuery(
+      "UPDATE civicrm_option_value cov
+       INNER JOIN civicrm_option_group cog ON cog.id = cov.option_group_id
+       SET cov.is_active = %1
+       WHERE cog.name IN ('activity_type', 'mandrill_secret') 
+       AND cov.name IN('Mandrill Email Bounce', 'Mandrill Email Click', 'Mandrill Email Open', 'Mandrill Email Sent','Secret Code')", 
+      array(
+        1 => array($action, 'Integer'),
+      )
+    ); 
+    
+    CRM_Core_DAO::executeQuery(
+      "UPDATE civicrm_option_group
+       SET is_active = %1
+       WHERE name  = 'mandrill_secret'", 
+      array(
+        1 => array($action, 'Integer')
+      )
+    ); 
+    
+    CRM_Core_DAO::executeQuery(
+      "UPDATE civicrm_navigation SET is_active = %2 WHERE name = 'mandrill_smtp_settings' AND domain_id = %1", 
+      array(
+        1 => array($domainID, 'Integer'),
+        2 => array($action, 'Integer')
+      )
+    ); 
+  }
+  else {
+    CRM_Core_DAO::executeQuery(
+      "DELETE FROM civicrm_navigation  WHERE name = 'mandrill_smtp_settings' AND domain_id = %1", 
+      array(
+        1 => array($domainID, 'Integer')
+      )
+    );
   }
 }
