@@ -25,9 +25,10 @@ Installation instructions for Mandrill Transactional Emails
   * Click Save.
 * Install Mandrill Transactional Emails extension
   * Go to Administer >> Customize Data and Screens >> Manage Extensions.
+  * Click on Add tab.
   * If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup above, then return to this page.
-  * Beside Mandrill Transactional Emails, click Install.
-  * Review the information, then click Install.
+  * Beside Mandrill Transactional Emails, click Download.
+  * Review the information, then click Download and Install.
 * Setup From Email address
   * If you have not already done so, go to:
   * Administer >> Communications >> From Email Addresses.
@@ -66,3 +67,16 @@ Installation instructions for Mandrill Transactional Emails
   * Navigate to Administer >> System Settings >> Mandrill Smtp Settings, click on SMTP, copy the value of Mandrill Post URL. Note that this step is necessary since it also activates the use of this callback URL.
   * Use that new value to configure the Post to URL value of the webhook for Mandrill.
 
+Disable Instructions
+====================
+Disabling the extension turns off its functionality but does not remove the software, and the database tables and data created by the extension.
+* Go to Administer >> Customize Data and Screens >> Manage Extensions.
+* Beside Mandrill Transactional Emails on the Extensions tab, click Disable.
+* On the confirmation page, click Disable.
+
+Uninstall Instructions
+======================
+Uninstalling the extension removes the software and changes it made to your database and the data that was inserted into your database to track emails sent via the extension to Mandrill.
+* Disable the extension following the instructions above.
+* On the Administer >> Customize Data and Screens >> Manage Extensions page, Extensions tab, beside Mandrill Transactional Emails extension, click Uninstall.
+* On the confirmation page, click Uninstall.
