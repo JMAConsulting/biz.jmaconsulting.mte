@@ -76,7 +76,7 @@ Disabling the extension turns off its functionality but does not remove the soft
 
 Uninstall Instructions
 ======================
-Uninstalling the extension removes the software and changes it made to your database and the data that was inserted into your database to track emails sent via the extension to Mandrill.
+Uninstalling the extension removes the changes it made to your database and the data that was inserted into your database to track emails sent via the extension to Mandrill. 
 * Disable the extension following the instructions above.
 * On the Administer >> Customize Data and Screens >> Manage Extensions page, Extensions tab, beside Mandrill Transactional Emails extension, click Uninstall.
 * On the confirmation page, click Uninstall.
