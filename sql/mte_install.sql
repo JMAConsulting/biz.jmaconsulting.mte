@@ -26,10 +26,12 @@
  *          Canada   M5T 2C7
  */
 
+{if $changeENUM}
 ALTER TABLE `civicrm_mailing_bounce_type` 
   CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown', 
     'Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject' ) 
     CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
+{/if}
 
 -- add new activity type
 SELECT @civicrm_activity_type_id := id FROM `civicrm_option_group` WHERE `name` LIKE 'activity_type';

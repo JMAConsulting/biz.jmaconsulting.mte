@@ -53,7 +53,6 @@ function mte_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function mte_civicrm_install() {
-  _mte_civix_civicrm_install();
   $mailingParams = array(
     'subject' => '***All Transactional Emails***',
     'url_tracking' => TRUE,
@@ -76,12 +75,17 @@ function mte_civicrm_install() {
     $civiVersion = CRM_Core_BAO_Domain::version();
   }
   
+  $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
   if (version_compare('4.4alpha1', $civiVersion) > 0) {
     $jobCLassName = 'CRM_Mailing_DAO_Job';
   }
-  else {
-    $jobCLassName = 'CRM_Mailing_DAO_MailingJob';    
+  
+  $changeENUM = FALSE;
+  if (version_compare('4.5alpha1', $civiVersion) > 0) {
+    $changeENUM = TRUE;
   }
+  CRM_Core_Smarty::singleton()->assign('changeENUM', $changeENUM);
+  _mte_civix_civicrm_install();
   $saveJob = new $jobCLassName();
   $saveJob->start_date = $saveJob->end_date = date('YmdHis');
   $saveJob->status = 'Complete';
