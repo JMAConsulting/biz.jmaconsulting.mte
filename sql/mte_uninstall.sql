@@ -51,8 +51,5 @@ DELETE cg, cv FROM civicrm_option_group cg
 INNER JOIN civicrm_option_value cv ON cg.id = cv.option_group_id
 WHERE cg.name = 'mandrill_secret';
 
--- MTE-18
-DELETE FROM civicrm_navigation  WHERE name = 'mandrill_smtp_settings';
-
 -- MTE-19
 DROP TABLE IF EXISTS civicrm_mandrill_activity;

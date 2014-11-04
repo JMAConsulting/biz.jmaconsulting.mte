@@ -26,8 +26,6 @@
  *          Canada   M5T 2C7
  */
 
--- Change enum for name in civicrm_mailing_bounce_type to add new Mandrill bounce types
--- TODO: change this enum to a pseudo-FK to option_value / option_group tables
 ALTER TABLE `civicrm_mailing_bounce_type` 
   CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown', 
     'Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject' ) 
@@ -63,7 +61,7 @@ SET weight = weight + 1
 WHERE parent_id = @civimail and weight > @outbound_mail;
 
 INSERT INTO civicrm_navigation (domain_id, label, name, url, permission, permission_operator, parent_id, is_active, has_separator, weight)
-VALUES (1, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, NULL, @outbound_mail + 1);
+VALUES ({$domainID}, 'Mandrill Smtp Settings', 'mandrill_smtp_settings', 'civicrm/mte/smtp?reset=1', 'access CiviCRM,administer CiviCRM', 'AND', @civimail, 1, NULL, @outbound_mail + 1);
 
 -- MTE-19
 CREATE TABLE IF NOT EXISTS `civicrm_mandrill_activity` (

@@ -101,6 +101,7 @@ class CRM_Mte_Upgrader_Base {
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('multilingual', $multilingual);
     $smarty->assign('locales', explode(CRM_Core_DAO::VALUE_SEPARATOR, $domain->locales));
+    $smarty->assign('domainID', CRM_Core_Config::domainID());
     
     // we didn't call CRM_Core_BAO_ConfigSetting::retrieve(), so we need to set $dbLocale by hand
     if ($multilingual) {
