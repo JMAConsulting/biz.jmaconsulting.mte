@@ -147,7 +147,6 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
         CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
         'mandrill_smtp_settings'
       );
-      CRM_Core_Session::setStatus(ts(""));
     }
     return TRUE;
   } 
