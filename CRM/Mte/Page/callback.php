@@ -148,7 +148,6 @@ Message Body: {$msgBody}" ;
                       'text' => $mailBody,
                       'html' => $mailBody,
                     );
-                    $bType = 'Bounce';
                     $query = "SELECT ce.email, cc.sort_name, cgc.contact_id FROM civicrm_contact cc
 INNER JOIN civicrm_group_contact cgc ON cgc.contact_id = cc.id
 INNER JOIN civicrm_email ce ON ce.contact_id = cc.id
@@ -163,6 +162,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
                     }
                   }
                 }
+                $bType = 'Bounce';
                 break;
               }
               
