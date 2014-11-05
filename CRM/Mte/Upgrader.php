@@ -152,6 +152,44 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
   } 
 
   /**
+   * Example: Run an external SQL script
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4514() {
+    $this->ctx->log->info('Applying update for version 1.5');
+    
+    $config = CRM_Core_Config::singleton();
+    if (property_exists($config, 'civiVersion')) {
+      $civiVersion = $config->civiVersion;
+    }
+    else {
+      $civiVersion = CRM_Core_BAO_Domain::version();
+    }
+    
+    if (!(version_compare('4.5alpha1', $civiVersion) > 0)) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_mailing_bounce_type` CHANGE `name` `name` VARCHAR( 24 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce'");
+      $mandrillBounceType = array(
+        'Mandrill Har' => 'Mandrill Hard',
+        'Mandrill Sof' => 'Mandrill Soft',
+        'Mandrill Spa' => 'Mandrill Spam',
+        'Mandrill Rej' => 'Mandrill Reject',
+      );
+      foreach($mandrillBounceType as $errorType => $bounceType) {
+        CRM_Core_DAO::executeQuery(
+          'UPDATE civicrm_mailing_bounce_type SET name = %2 WHERE name = %1',
+          array(
+            1 => array($errorType, 'String'),
+            2 => array($bounceType, 'String'),
+          )
+        );
+      }
+    }
+    return TRUE;
+  } 
+
+  /**
    * Example: Run a slow upgrade process by breaking it up into smaller chunk
    *
    * @return TRUE on success
