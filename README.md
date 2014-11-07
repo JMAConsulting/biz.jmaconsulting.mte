@@ -1,4 +1,4 @@
-biz.jmaconsulting.mte version 1.2 for CiviCRM 4.2, 4.3, 4.4, 4.5
+biz.jmaconsulting.mte version 1.5 for CiviCRM 4.2, 4.3, 4.4, 4.5
 ==============================================================
 
 Mandrill Transactional Emails
