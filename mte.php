@@ -324,3 +324,22 @@ function enableDisableNavigationMenu($action) {
     );
   }
 }
+ 
+/**
+ * Implementation of hook_civicrm_buildForm
+ */
+function mte_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Admin_Form_Options' && 'mandrill_secret' == $form->getVar('_gName')) {
+    $values = $form->getVar('_values');
+
+    if (CRM_Utils_Array::value('name', $values) != 'Secret Code') {
+      return FALSE; 
+    }
+    $form->add('text',
+      'value',
+      ts('Value'),
+      CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'value'),
+      TRUE
+    );
+  }
+} 
