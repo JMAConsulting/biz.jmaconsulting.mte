@@ -131,7 +131,7 @@ function mte_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function mte_civicrm_uninstall() {
-  enableDisableNavigationMenu(2);
+  mte_enableDisableNavigationMenu(2);
   return _mte_civix_civicrm_uninstall();
 }
 
@@ -139,7 +139,7 @@ function mte_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function mte_civicrm_enable() {
-  enableDisableNavigationMenu(1);
+  mte_enableDisableNavigationMenu(1);
   return _mte_civix_civicrm_enable();
 }
 
@@ -147,7 +147,7 @@ function mte_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function mte_civicrm_disable() {
-  enableDisableNavigationMenu(0);  
+  mte_enableDisableNavigationMenu(0);  
   return _mte_civix_civicrm_disable();
 }
 
@@ -283,7 +283,7 @@ function mte_civicrm_postEmailSend(&$params) {
  *
  */
 
-function enableDisableNavigationMenu($action) {
+function mte_enableDisableNavigationMenu($action) {
   $domainID = CRM_Core_Config::domainID();
   
   if ($action < 2) { 
