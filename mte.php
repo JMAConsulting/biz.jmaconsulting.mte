@@ -206,7 +206,10 @@ function mte_getmailer(&$mailer, &$params = array()) {
  * Implementation of hook_civicrm_alterMailParams( )
  * To send headers in mail and also create activity
  */
-function mte_civicrm_alterMailParams(&$params) {
+function mte_civicrm_alterMailParams(&$params, $context = NULL) {
+  if ($context == 'civimail') {
+    return FALSE;
+  }
   $session   = CRM_Core_Session::singleton();
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
