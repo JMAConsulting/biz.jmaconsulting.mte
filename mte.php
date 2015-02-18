@@ -240,7 +240,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     'status_id' => 1,
     'priority_id' => 1,
     'version' => 3,
-    'details' => $params['html'],
+    'details' => CRM_Utils_Array::value('html', $params, $params['text']),
   );
   $result = civicrm_api( 'activity','create',$activityParams );
   if(CRM_Utils_Array::value('id', $result)){
