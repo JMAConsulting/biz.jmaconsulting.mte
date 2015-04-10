@@ -179,9 +179,9 @@ function mte_civicrm_managed(&$entities) {
  * To alter mailer settings i.e use mandrill smtp settings for transactional mails
  */
 function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
-  $isTransactionalMail = CRM_Core_Smarty::singleton()->get_template_vars('isTransactionalMail', 1);
+  $alterMailer = CRM_Core_Smarty::singleton()->get_template_vars('alterMailer', 1);
 
-  if ($isTransactionalMail) {
+  if ($alterMailer) {
     mte_getmailer($mailer, $params);    
   } 
 }
@@ -198,7 +198,7 @@ function mte_getmailer(&$mailer, &$params = array()) {
     $params['password'] = CRM_Utils_Crypt::decrypt($mailingBackend['smtpPassword']);
     $params['auth'] = ($mailingBackend['smtpAuth']) ? TRUE : FALSE;
     $mailer = Mail::factory('smtp', $params);
-    CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 0);
+    CRM_Core_Smarty::singleton()->assign('alterMailer', 0);
   }
 }
 
@@ -207,10 +207,10 @@ function mte_getmailer(&$mailer, &$params = array()) {
  * To send headers in mail and also create activity
  */
 function mte_civicrm_alterMailParams(&$params, $context = NULL) {
-  if ($context == 'civimail') {
+  if (!mte_checkSettings($context)) {
     return FALSE;
   }
-  $session   = CRM_Core_Session::singleton();
+  $session = CRM_Core_Session::singleton();
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
   $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
@@ -242,11 +242,12 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     'version' => 3,
     'details' => CRM_Utils_Array::value('html', $params, $params['text']),
   );
-  $result = civicrm_api( 'activity','create',$activityParams );
+  $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
     $params['activityId'] = $result['id'];
-    $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "'.$result['id'].'" }';
-    CRM_Core_Smarty::singleton()->assign('isTransactionalMail', 1);
+    // FIXME: change incase of CiviMail
+    $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $result['id'] . '" }';
+    CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
     if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
       $mailer = & CRM_Core_Config::getMailer();
       mte_getmailer($mailer);
@@ -346,3 +347,26 @@ function mte_civicrm_buildForm($formName, &$form) {
     );
   }
 } 
+
+/*
+ * function to check if Mandril enabled for 
+ * Civimail v/s Transactional mail
+ *
+ */
+function mte_checkSettings($context) {
+  
+  $usedFor = 1;
+  if ($context == 'civimail') {
+    $usedFor = 2;
+  }
+  
+  $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+    'mandrill_smtp_settings'
+  );
+  
+  if (array_key_exists('used_for', $mailingBackend) && !empty($mailingBackend['used_for'][$usedFor])) {
+    return TRUE;
+  }
+  
+  return FALSE;
+}
