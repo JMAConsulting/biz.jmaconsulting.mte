@@ -244,9 +244,13 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   );
   $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
-    $params['activityId'] = $result['id'];
-    // FIXME: change incase of CiviMail
-    $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $result['id'] . '" }';
+    $params['activityId'] = $mandrillHeader = $result['id'];
+    
+    // include verp in header incase of bulk mailing
+    if ($context == 'civimail') {
+      $mandrillHeader .= CRM_Core_Config::singleton()->verpSeparator . CRM_Utils_Array::value('Return-Path', $params);
+    }
+    $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $mandrillHeader . '" }';
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
     if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
       $mailer = & CRM_Core_Config::getMailer();
