@@ -60,6 +60,12 @@
          <span class="description">{ts}If your SMTP server requires authentication, enter your Username and Password here.{/ts}</span>
          </td>
        </tr>
+       <tr class="crm-smtp-form-block-used_for">
+         <td class="label">{$form.used_for.label}</td>
+         <td>{$form.used_for.html}<br />
+         <span class="description">{ts}{/ts}</span>
+         </td>
+       </tr>
        <tr class="crm-smtp-form-block-enable">
          <td class="label">{$form.is_active.label}</td>
          <td>{$form.is_active.html}<br />

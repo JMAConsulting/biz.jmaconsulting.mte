@@ -23,6 +23,14 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
 
     $this->add('submit', $this->_testButtonName, ts('Save & Send Test Email'));
     $this->add('checkbox', 'is_active', ts('Enabled?'));
+    $options = array(
+      'Transactional Emails' => 1,
+      'CiviCRM Bulk Mailings' => 2
+    );
+    $this->addCheckBox('used_for', ts('Used For?'), $options,
+      NULL, NULL, NULL, NULL,
+      array('&nbsp;&nbsp;', '&nbsp;&nbsp;', '<br/>') 
+    );
     
     $element = $this->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
     $element->freeze();
