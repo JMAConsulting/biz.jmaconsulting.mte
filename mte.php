@@ -237,10 +237,11 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     'activity_type_id' => array_search('Mandrill Email Sent', $activityTypes),
     'subject' => CRM_Utils_Array::value('subject', $params) ? $params['subject'] : CRM_Utils_Array::value('Subject', $params),
     'activity_date_time' => date('YmdHis'),
-    'status_id' => 1,
+    'status_id' => 2,
     'priority_id' => 1,
     'version' => 3,
     'details' => CRM_Utils_Array::value('html', $params, $params['text']),
+    'target_contact_id' => mte_targetContactIds($params), 
   );
   $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
@@ -256,30 +257,6 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
       $mailer = & CRM_Core_Config::getMailer();
       mte_getmailer($mailer);
     }
-  }
-}
-
-/**
- * Implementation of hook_civicrm_postEmailSend( )
- * To update the status of activity created in hook_civicrm_alterMailParams.
- */
-function mte_civicrm_postEmailSend(&$params) {
-  if(CRM_Utils_Array::value('activityId', $params)){
-    $targetContactID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $params['toEmail'], 'contact_id', 'email');
-    if (!$targetContactID) {
-      $result = civicrm_api3('contact', 'create', array(
-        'contact_type' => 'Individual',
-        'email' => $params['toEmail'],
-      ));
-      $targetContactID = $result['id'];
-    }
-    $activityParams = array( 
-      'id' => $params['activityId'],
-      'status_id' => 2,
-      'version' => 3,
-      'target_contact_id' => $targetContactID, 
-    );
-    $result = civicrm_api( 'activity','create',$activityParams );
   }
 }
 
@@ -375,4 +352,32 @@ function mte_checkSettings($context) {
     return TRUE;
   }
   return FALSE;
+}
+
+/*
+ *
+ * Function to get contact id from emails
+ *
+ * @param array $params - array of params of emails
+ *
+ * return array of contact id's
+ */
+function mte_targetContactIds($params) {
+  $emails = array_merge(explode(',', $params['toEmail']), explode(',', $params['cc']), explode(',', $params['bcc']));
+  $targetContactIds = array();
+  foreach ($emails as $email) {
+    preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $email, $matches);
+    if (!empty($matches[0])) {
+      $targetContactID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', trim($matches[0]), 'contact_id', 'email');
+      if (!$targetContactID) {
+        $result = civicrm_api3('contact', 'create', array(
+          'contact_type' => 'Individual',
+          'email' => trim($matches[0]),
+        ));
+        $targetContactID = $result['id'];
+      }
+      $targetContactIds[] = $targetContactID;
+    }
+  }
+  return array_unique($targetContactIds);
 }
