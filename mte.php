@@ -368,9 +368,11 @@ function mte_checkSettings($context) {
     'mandrill_smtp_settings'
   );
   
-  if (array_key_exists('used_for', $mailingBackend) && !empty($mailingBackend['used_for'][$usedFor])) {
+  if (CRM_Utils_array::value('is_active', $mailingBackend) && 
+    array_key_exists('used_for', $mailingBackend) 
+    && !empty($mailingBackend['used_for'][$usedFor])
+  ) {
     return TRUE;
   }
-  
   return FALSE;
 }
