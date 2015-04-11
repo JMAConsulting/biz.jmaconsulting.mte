@@ -93,16 +93,25 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             self::createActivity($value, 'new');
           }
           
-          $params = array(
-            'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
-            'contact_id' => $emails['email']['contact_id'],
-            'email_id' => $emails['email']['id'],
-          );
-          $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
-          
-          if ($eventQueue->id) {
+          if (empty($header[2])) {
+            $params = array(
+              'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
+              'contact_id' => $emails['email']['contact_id'],
+              'email_id' => $emails['email']['id'],
+            );
+            $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
+            $eventQueueID = $eventQueue->id;
+            $hash = $eventQueue->hash;
+            $jobId = $params['job_id'];
+          }
+          else {
+            $eventQueueID = $header[3];
+            $hash = $header[4];
+            $jobId = $header[2];
+          }
+          if ($eventQueueID) {
             $mandrillActivtyParams = array(
-              'mailing_queue_id' => $eventQueue->id,
+              'mailing_queue_id' => $eventQueueID,
               'activity_id' => $header[0],
               );
             CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
@@ -117,7 +126,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           switch ($value['event']) {
           case 'open':
             $oe = new CRM_Mailing_Event_BAO_Opened();
-            $oe->event_queue_id = $eventQueue->id;
+            $oe->event_queue_id = $eventQueueID;
             $oe->time_stamp = date('YmdHis', $value['ts']);
             $oe->save();
             break;
@@ -130,7 +139,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
               $tracker->save();
             }
             $open = new CRM_Mailing_Event_BAO_TrackableURLOpen();
-            $open->event_queue_id = $eventQueue->id;
+            $open->event_queue_id = $eventQueueID;
             $open->trackable_url_id = $tracker->id;
             $open->time_stamp = date('YmdHis', $value['ts']);
             $open->save();
@@ -146,11 +155,11 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             
             $bounceParams = array(
               'time_stamp' => date('YmdHis', $value['ts']),
-              'event_queue_id' => $eventQueue->id,
+              'event_queue_id' => $eventQueueID,
               'bounce_reason' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description'),
               'bounce_type_id' => $bounceType["Mandrill $bType"],
-              'job_id' => $params['job_id'],
-              'hash' => $eventQueue->hash,
+              'job_id' => $jobId,
+              'hash' => $hash,
             );
             CRM_Mailing_Event_BAO_Bounce::create($bounceParams);
                   
