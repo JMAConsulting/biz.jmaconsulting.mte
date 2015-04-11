@@ -342,12 +342,12 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
       'status_id' => 2,
       'priority_id' => 1,
       'version' => 3,
-      'target_contact_id' => $emails['contactIds'],
+      'target_contact_id' => array_unique($emails['contactIds']),
       'details' => CRM_Utils_Array::value('mail_body', $value)
     );
     
     if (CRM_Utils_Array::value('assignee_contact_id', $value)) {
-      $activityParams['assignee_contact_id'] = $value['assignee_contact_id'];
+      $activityParams['assignee_contact_id'] = array_unique($value['assignee_contact_id']);
     }
     
     $result = civicrm_api('activity', 'create', $activityParams);
