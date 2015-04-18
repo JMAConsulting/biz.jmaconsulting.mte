@@ -376,7 +376,20 @@ function mte_checkSettings($context) {
  * return array of contact id's
  */
 function mte_targetContactIds($params) {
-  $emails = array_merge(explode(',', $params['toEmail']), explode(',', $params['cc']), explode(',', $params['bcc']));
+  $emails = array_merge(
+    explode(
+      ',', 
+      $params['toEmail']
+    ), 
+    explode(
+      ',', 
+      CRM_Utils_Array::value('cc', $params, '')
+    ), 
+    explode(
+      ',', 
+      CRM_Utils_Array::value('bcc', $params, '')
+    )
+  );
   $targetContactIds = array();
   foreach ($emails as $email) {
     preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $email, $matches);
