@@ -253,6 +253,13 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
       'details' => CRM_Utils_Array::value('html', $params, $params['text']),
       'target_contact_id' => mte_targetContactIds($params), 
     );
+    if (!empty($params['job_id'])) {
+      $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
+      if (version_compare('4.4alpha1', CRM_Core_Config::singleton()->civiVersion) > 0) {
+        $jobCLassName = 'CRM_Mailing_DAO_Job';
+      }
+      $activityParams['source_record_id'] = CRM_Core_DAO::getFieldValue($jobCLassName, $params['job_id'], 'mailing_id');
+    }
   }
   $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
