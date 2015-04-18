@@ -91,12 +91,11 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
             continue;
           }
-          
+          $value['mailing_id'] = $mail->id;          
           // IF no activity id in header then create new activity
           if (empty($header[0])) {
             self::createActivity($value, 'new');
           }
-          
           if (empty($header[2])) {
             $params = array(
               'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
@@ -347,7 +346,8 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
       'priority_id' => 1,
       'version' => 3,
       'target_contact_id' => array_unique($emails['contactIds']),
-      'details' => CRM_Utils_Array::value('mail_body', $value)
+      'source_record_id' => CRM_Utils_Array::value('mailing_id', $value),
+      'details' => CRM_Utils_Array::value('mail_body', $value),
     );
     
     if (CRM_Utils_Array::value('assignee_contact_id', $value)) {
