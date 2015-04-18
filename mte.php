@@ -233,21 +233,33 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     }
   }
 
-  $activityParams = array( 
-    'source_contact_id' => $userID,
-    'activity_type_id' => array_search('Mandrill Email Sent', $activityTypes),
-    'subject' => CRM_Utils_Array::value('subject', $params) ? $params['subject'] : CRM_Utils_Array::value('Subject', $params),
-    'activity_date_time' => date('YmdHis'),
-    'status_id' => 2,
-    'priority_id' => 1,
-    'version' => 3,
-    'details' => CRM_Utils_Array::value('html', $params, $params['text']),
-    'target_contact_id' => mte_targetContactIds($params), 
-  );
+  if ($context == 'civimail' && CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
+    $activityParams = array( 
+      'id' => CRM_Mte_BAO_Mandrill::$_mailingActivityId,
+      'target_contact_id' => mte_targetContactIds($params),
+      'deleteActivityTarget' => FALSE,
+      'version' => 3,
+    );
+  }
+  else {
+    $activityParams = array( 
+      'source_contact_id' => $userID,
+      'activity_type_id' => array_search('Mandrill Email Sent', $activityTypes),
+      'subject' => CRM_Utils_Array::value('subject', $params) ? $params['subject'] : CRM_Utils_Array::value('Subject', $params),
+      'activity_date_time' => date('YmdHis'),
+      'status_id' => 2,
+      'priority_id' => 1,
+      'version' => 3,
+      'details' => CRM_Utils_Array::value('html', $params, $params['text']),
+      'target_contact_id' => mte_targetContactIds($params), 
+    );
+  }
   $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
     $params['activityId'] = $mandrillHeader = $result['id'];
-    
+     if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
+       CRM_Mte_BAO_Mandrill::$_mailingActivityId = $result['id'];
+     }
     // include verp in header incase of bulk mailing
     if ($context == 'civimail') {
       $mandrillHeader .= CRM_Core_Config::singleton()->verpSeparator . CRM_Utils_Array::value('Return-Path', $params);

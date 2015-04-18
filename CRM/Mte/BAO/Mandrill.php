@@ -37,6 +37,13 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
 
   
   /**
+   * static cache to hold Activity id for bulk mailing
+   * @var array
+   * @static
+   */
+  public static $_mailingActivityId = NULL;
+
+  /**
    * class constructor
    */
   function __construct() {
