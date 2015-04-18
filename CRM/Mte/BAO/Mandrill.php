@@ -82,7 +82,11 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
         $contacts = array();
         
         if ($mail->find(TRUE)) {
-          // FIXME: do we need to check if mailing is configured for clicks and opens?
+          if (($value['event'] == 'click' && $mail->url_tracking === FALSE) 
+            || ($value['event'] == 'open' && $mail->open_tracking === FALSE)
+          ) {
+            continue;
+          }
           $emails = self::retrieveEmailContactId($value['msg']['email']);
           if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
             continue;
