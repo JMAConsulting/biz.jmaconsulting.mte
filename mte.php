@@ -390,7 +390,6 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
       $instanceValue['report_id'],
       array(
         'Mailing/bounce',
-        'Mailing/summary',
         'Mailing/opened',
         'Mailing/clicks',
         'mailing/detail',
