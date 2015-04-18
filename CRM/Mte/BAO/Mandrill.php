@@ -349,6 +349,9 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     if (CRM_Utils_Array::value('assignee_contact_id', $value)) {
       $activityParams['assignee_contact_id'] = array_unique($value['assignee_contact_id']);
     }
+    if (!empty($header[0])) {
+      $activityParams['original_id'] = $header[0];
+    }
     
     $result = civicrm_api('activity', 'create', $activityParams);
     if (!empty($header) && !empty($result['id'])) {
