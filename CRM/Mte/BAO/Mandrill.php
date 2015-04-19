@@ -85,7 +85,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
         
         $metaData = CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : NULL;
         $header = self::extractHeader($metaData);
-        $mail = self::getMailing($header);
+        $mail = self::getMailing($header, $jobCLassName);
         $contacts = array();
         
         if ($mail->find(TRUE)) {
@@ -303,11 +303,11 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    *
    * @return object of CRM_Mailing_DAO_Mailing()
    */
-  public static function getMailing(&$header) {    
+  public static function getMailing(&$header, $jobClass) {    
     $mail = new CRM_Mailing_DAO_Mailing();
     $mail->domain_id = CRM_Core_Config::domainID();
     if (CRM_Utils_Array::value(1, $header)) {
-      
+      $mail->id = CRM_Core_DAO::getFieldValue($jobClass, $header[2], 'mailing_id');
     }
     else {  
       $mail->subject = "***All Transactional Emails***";
