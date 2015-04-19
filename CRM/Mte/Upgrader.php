@@ -190,6 +190,29 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
   } 
 
   /**
+   * Example: Run an external SQL script
+   *
+   * @return TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_4620() {
+    $this->ctx->log->info('Applying update for version 2.0');
+    
+    $mail = new CRM_Mailing_DAO_Mailing();
+    $mail->domain_id = CRM_Core_Config::domainID();
+    $mail->subject = "***All Transactional Emails***";
+    $mail->url_tracking = TRUE;
+    $mail->forward_replies = FALSE;
+    $mail->auto_responder = FALSE;
+    $mail->open_tracking = TRUE;
+    if ($mail->find(TRUE)) {
+      $mail->name = ts('Transaction Emails');
+      $mail->save();
+    }
+    return TRUE;
+  } 
+
+  /**
    * Example: Run a slow upgrade process by breaking it up into smaller chunk
    *
    * @return TRUE on success
