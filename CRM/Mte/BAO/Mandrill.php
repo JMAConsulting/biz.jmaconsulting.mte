@@ -166,11 +166,14 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             $bounceParams = array(
               'time_stamp' => date('YmdHis', $value['ts']),
               'event_queue_id' => $eventQueueID,
-              'bounce_reason' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description'),
               'bounce_type_id' => $bounceType["Mandrill $bType"],
               'job_id' => $jobId,
               'hash' => $hash,
             );
+            $bounceParams['bounce_reason'] = CRM_Utils_Array::value('bounce_description', $value['msg']);
+            if (empty($bounceParams['bounce_reason'])) {
+              $bounceParams['bounce_reason'] = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_BounceType', $bounceType["Mandrill $bType"], 'description');
+            }
             CRM_Mailing_Event_BAO_Bounce::create($bounceParams);
                   
             if (substr($value['event'], -7) == '_bounce') {
