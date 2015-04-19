@@ -463,6 +463,14 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
         $from = $var->getVar('_from');
         $from .= ' LEFT JOIN civicrm_mandrill_activity ON civicrm_mailing_event_queue.id = civicrm_mandrill_activity.mailing_queue_id';
         $var->setVar('_from', $from); 
+        if ($instanceValue['report_id'] == 'Mailing/opened') {
+          $var->_columnHeaders['opened_count'] = array(
+            'type' => 1,
+            'title' => ts('Opened Count'),
+          );
+          $var->_select .= ' , count(DISTINCT(civicrm_mailing_event_opened.id)) as opened_count';
+          $var->_groupBy = ' GROUP BY civicrm_mailing_event_queue.id';
+        }
       }
     }
     if ($varType == 'rows') { 
