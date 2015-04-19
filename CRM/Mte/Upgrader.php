@@ -209,6 +209,8 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
       $mail->name = ts('Transaction Emails');
       $mail->save();
     }
+    $url = CRM_Utils_System::url('civicrm/mte/smtp', 'reset=1', TRUE, NULL, FALSE, TRUE);
+    CRM_Core_Session::setStatus(ts("Update the <a href={$url}>Mandrill settings</a> to configure it to use for Transactional Email and/or Civi Bulk Mail."));
     return TRUE;
   } 
 
