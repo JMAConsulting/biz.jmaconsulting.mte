@@ -101,7 +101,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           $value['mailing_id'] = $mail->id;          
           // IF no activity id in header then create new activity
           if (empty($header[0])) {
-            self::createActivity($value, 'new');
+            self::createActivity($value);
           }
           if (empty($header[2])) {
             $params = array(
@@ -130,6 +130,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           if (!empty($header[0])) { 
             $msgBody = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $header[0], 'details');
           }
+          $value['mail_body'] = $msgBody;
           
           $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
           $assignedContacts = array();
@@ -214,7 +215,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
               
           // create activity for click and open event
           if ($value['event'] == 'open' || $value['event'] == 'click' || $bType == 'Bounce') {
-            self::createActivity($value);
+            self::createActivity($value, $bType);
           }
         }
       }
@@ -341,11 +342,11 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
     $subject = CRM_Utils_Array::value('subject', $value['msg']) ? $value['msg']['subject'] : "Mandrill Email $bType";
     if ($context) {
-      $typeId = array_search("Mandrill Email $bType", $activityTypes);
-      $subject = ts('Email sent from Mandrill App: ') . $subject;
+      $typeId = array_search("Mandrill Email $context", $activityTypes);
     }
     else {
       $typeId = array_search("Mandrill Email Sent", $activityTypes);
+      $subject = ts('Email sent from Mandrill App: ') . $subject;
     }
     $activityParams = array( 
       'source_contact_id' => $sourceContactId['email']['contact_id'],
