@@ -196,7 +196,6 @@ function mte_civicrm_managed(&$entities) {
  */
 function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
   $alterMailer = CRM_Core_Smarty::singleton()->get_template_vars('alterMailer', 1);
-
   if ($alterMailer) {
     mte_getmailer($mailer, $params);    
   } 
@@ -279,15 +278,17 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   $result = civicrm_api('activity', 'create', $activityParams);
   if(CRM_Utils_Array::value('id', $result)){
     $params['activityId'] = $mandrillHeader = $result['id'];
-     if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
-       CRM_Mte_BAO_Mandrill::$_mailingActivityId = $result['id'];
-     }
     // include verp in header incase of bulk mailing
     if ($context == 'civimail') {
       $mandrillHeader .= CRM_Core_Config::singleton()->verpSeparator . CRM_Utils_Array::value('Return-Path', $params);
     }
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $mandrillHeader . '" }';
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
+    if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
+      CRM_Mte_BAO_Mandrill::$_mailingActivityId = $result['id'];
+      $mailer = & CRM_Core_Config::getMailer();
+      mte_getmailer($mailer);
+    }
     if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
       $mailer = & CRM_Core_Config::getMailer();
       mte_getmailer($mailer);
