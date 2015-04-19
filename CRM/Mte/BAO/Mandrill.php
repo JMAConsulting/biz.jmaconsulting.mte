@@ -101,7 +101,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           $value['mailing_id'] = $mail->id;          
           // IF no activity id in header then create new activity
           if (empty($header[0])) {
-            self::createActivity($value);
+            self::createActivity($value, NULL, $header);
           }
           if (empty($header[2])) {
             $params = array(
@@ -215,7 +215,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
               
           // create activity for click and open event
           if ($value['event'] == 'open' || $value['event'] == 'click' || $bType == 'Bounce') {
-            self::createActivity($value, $bType);
+            self::createActivity($value, $bType, $header);
           }
         }
       }
