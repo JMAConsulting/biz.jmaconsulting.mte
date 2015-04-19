@@ -116,7 +116,8 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           }
           else {
             $eventQueueID = $header[3];
-            $hash = $header[4];
+            $hash = explode('@', $header[4]);
+            $hash = $hash[0];
             $jobId = $header[2];
           }
           if ($eventQueueID) {
