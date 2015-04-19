@@ -196,8 +196,11 @@ function mte_civicrm_managed(&$entities) {
  */
 function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
   $alterMailer = CRM_Core_Smarty::singleton()->get_template_vars('alterMailer', 1);
-  if ($alterMailer) {
-    mte_getmailer($mailer, $params);    
+  if (!$alterMailer) {
+    $alterMailer = mte_checkSettings('civimail');
+  }
+  if ($alterMailer == 1) {
+    mte_getmailer($mailer, $params);
   } 
 }
 
@@ -222,6 +225,9 @@ function mte_getmailer(&$mailer, &$params = array()) {
  * To send headers in mail and also create activity
  */
 function mte_civicrm_alterMailParams(&$params, $context = NULL) {
+  if ($context != 'civimail') {
+    CRM_Core_Smarty::singleton()->assign('alterMailer', 'ignore');
+  }
   if (!mte_checkSettings($context)) {
     return FALSE;
   }
@@ -286,8 +292,6 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
     if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
       CRM_Mte_BAO_Mandrill::$_mailingActivityId = $result['id'];
-      $mailer = & CRM_Core_Config::getMailer();
-      mte_getmailer($mailer);
     }
     if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
       $mailer = & CRM_Core_Config::getMailer();
