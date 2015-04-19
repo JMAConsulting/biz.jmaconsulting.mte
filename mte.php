@@ -55,7 +55,7 @@ function mte_civicrm_xmlMenu(&$files) {
 function mte_civicrm_install() {
   $mailingParams = array(
     'subject' => '***All Transactional Emails***',
-    'name' => 'Transaction Emails',
+    'name' => ts('Transaction Emails'),
     'url_tracking' => TRUE,
     'forward_replies' => FALSE,
     'auto_responder' => FALSE,
