@@ -133,6 +133,21 @@ function mte_civicrm_install() {
  */
 function mte_civicrm_uninstall() {
   mte_enableDisableNavigationMenu(2);
+
+  // Change enum for name in civicrm_mailing_bounce_type to remove all Mandrill bounce types
+  $config = CRM_Core_Config::singleton();
+  if (property_exists($config, 'civiVersion')) {
+    $civiVersion = $config->civiVersion;
+  }
+  else {
+    $civiVersion = CRM_Core_BAO_Domain::version();
+  }
+  
+  if (version_compare('4.5alpha1', $civiVersion) > 0) {
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_mailing_bounce_type` 
+  CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown' ) 
+    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';");
+  }
   return _mte_civix_civicrm_uninstall();
 }
 

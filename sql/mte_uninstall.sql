@@ -34,11 +34,6 @@ DELETE FROM `civicrm_mailing_job` WHERE `job_type` = 'Special: All transactional
 
 DELETE FROM `civicrm_mailing_bounce_type` WHERE `name` in ('Mandrill Hard', 'Mandrill Soft', 'Mandrill Spam', 'Mandrill Reject');
 
--- Change enum for name in civicrm_mailing_bounce_type to remove all Mandrill bounce types
-ALTER TABLE `civicrm_mailing_bounce_type` 
-  CHANGE `name` `name` ENUM( 'AOL', 'Away', 'DNS', 'Host', 'Inactive', 'Invalid', 'Loop', 'Quota', 'Relay', 'Spam', 'Syntax', 'Unknown' ) 
-    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type of bounce';
-
 -- Delete all the activities and 'Mandrill Email Sent' activity type
 DELETE civicrm_activity.*, civicrm_option_value.* FROM civicrm_option_group
 LEFT JOIN civicrm_option_value ON  `civicrm_option_group`.`id` = `civicrm_option_value`.`option_group_id`
