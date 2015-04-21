@@ -144,6 +144,9 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             break;
                 
           case 'click':
+            if (CRM_Utils_Array::value(1, $header) == 'b') {
+              break;
+            }
             $tracker = new CRM_Mailing_BAO_TrackableURL();
             $tracker->url = $value['url'];
             $tracker->mailing_id = $mail->id;
