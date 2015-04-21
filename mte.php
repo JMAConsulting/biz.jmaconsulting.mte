@@ -290,6 +290,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     }
     else {
       mte_createQueue($mandrillHeader, $params['toEmail']);
+      $params['mandrillHeader'] = $mandrillHeader;
     }
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $mandrillHeader . '" }';
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
@@ -520,5 +521,20 @@ function mte_createQueue(&$mandrillHeader, $toEmail) {
     );
     $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
     $mandrillHeader = implode(CRM_Core_Config::singleton()->verpSeparator, array($mandrillHeader, 'm', $params['job_id'], $eventQueue->id, $eventQueue->hash));
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_postEmailSend
+ */
+function mte_civicrm_postEmailSend(&$params) {
+  if (!empty($params['mandrillHeader'])) {
+    $header = explode(CRM_Core_Config::singleton()->verpSeparator, $params['mandrillHeader']);
+    $params = array(
+      'job_id' => $header[2],
+      'event_queue_id' => $header[3],
+      'hash' => $header[4],
+    );
+    CRM_Mailing_Event_BAO_Delivered::create($params);
   }
 }
