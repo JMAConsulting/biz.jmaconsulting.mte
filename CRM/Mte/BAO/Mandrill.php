@@ -253,12 +253,12 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     $result = civicrm_api('email', 'get', $params);
     
     //if contact not found then create new one
-    if (empty($result['id'])) {
+    if (!$result['count']) {
       $contactParams = array(
         'contact_type' => 'Individual',
         'email' => $email,
       );
-      civicrm_api3('contact', 'create', $params);
+      civicrm_api3('contact', 'create', $contactParams);
       $result = civicrm_api('email', 'get', $params);      
     }
     
