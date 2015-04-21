@@ -288,6 +288,9 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     if ($context == 'civimail') {
       $mandrillHeader .= CRM_Core_Config::singleton()->verpSeparator . CRM_Utils_Array::value('Return-Path', $params);
     }
+    else {
+      mte_createQueue($mandrillHeader, $params['toEmail']);
+    }
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $mandrillHeader . '" }';
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
     if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
@@ -494,5 +497,28 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
         unset($object->_columnHeaders['civicrm_mandrill_activity_id'], $object->_columnHeaders['civicrm_mailing_id']);
       }    
     }
+  }
+}
+
+function mte_createQueue(&$mandrillHeader, $toEmail) {
+  $mail = new CRM_Mailing_DAO_Mailing();
+  $mail->subject = "***All Transactional Emails***";
+  $mail->url_tracking = TRUE;
+  $mail->forward_replies = FALSE;
+  $mail->auto_responder = FALSE;
+  $mail->open_tracking = TRUE;
+  if ($mail->find(TRUE)) {
+    $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail);
+    $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
+    if (version_compare('4.4alpha1', CRM_Core_Config::singleton()->civiVersion) > 0) {
+      $jobCLassName = 'CRM_Mailing_DAO_Job';
+    }
+    $params = array(
+      'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
+      'contact_id' => $emails['email']['contact_id'],
+      'email_id' => $emails['email']['id'],
+    );
+    $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
+    $mandrillHeader = implode(CRM_Core_Config::singleton()->verpSeparator, array($mandrillHeader, 'm', $params['job_id'], $eventQueue->id, $eventQueue->hash));
   }
 }
