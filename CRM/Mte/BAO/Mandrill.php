@@ -168,6 +168,12 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
               CRM_Core_PseudoConstant::populate($bounceType, 'CRM_Mailing_DAO_BounceType', TRUE, 'id', NULL, NULL, NULL, 'name');
             }
             
+            //Delete queue in delivered since this email is not successfull
+            $delivered = new CRM_Mailing_Event_BAO_Delivered();
+            $delivered->event_queue_id = $eventQueueID;
+            if ($delivered->find(TRUE)) {
+              $delivered->delete();
+            }
             $bounceParams = array(
               'time_stamp' => date('YmdHis', $value['ts']),
               'event_queue_id' => $eventQueueID,
