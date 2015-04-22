@@ -61,7 +61,10 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->postFakeResponses('open', $email, 'test@test.com', $subject, $header);
     $this->postFakeResponses('click', $email, 'test@test.com', $subject, $header);
     $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname, FALSE);
-    $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname, FALSE);    
+    $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname, FALSE);
+    $this->checkReports('Mail Opened', $lname . ', ' . $fname, 'Opened', 1, $subject);
+    $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce');
+    $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks', 1, $subject);
     //FIXME : Add Checks
   }
     
@@ -284,5 +287,40 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $response = curl_exec($ch);
+  }
+
+  public function checkReports($reportName, $contactName, $name, $count = 0, $subject = NULL) {
+    // Open report list
+    $this->openCiviPage('report/list', 'reset=1');    
+    // Visit report
+    $this->clickLink("xpath=//div[@id='Mail']//table/tbody//tr/td/a/strong[text() = '$reportName']");
+    $this->click("xpath=//div[@id='mainTabContainer']/ul/li[3]/a");
+    $this->waitForElementPresent('sort_name_value');
+    $this->type('sort_name_value', $contactName);
+    $this->clickLink("xpath=//div[@id='mainTabContainer']/ul/li[1]/a", 'fields[mailing_name]', FALSE);
+    if (!$this->isChecked('fields[mailing_name]')) {
+      $this->click('fields[mailing_name]');
+    }
+    // click preview
+    $this->clickLink("_qf_{$name}_submit");
+    if ($count) {
+      $this->assertElementContainsText("xpath=id('$name')/div[3]/table[3]/tbody/tr[1]/td[1]", "$count", 'Count does not match.');
+      switch ($name) {
+        case 'Bounce':
+          $this->isTextPresent('Not valid Url ');
+          break;
+        case 'Clicks':
+          $this->isTextPresent('http://civicrm.org');
+          break;
+      }
+      if ($subject) {
+        $this->clickLink("xpath=id('$name')/div[3]/table[2]/tbody/tr[1]/td[2]/a");
+        $this->isTextPresent('Mandrill Email Sent');
+        $this->isTextPresent($subject);
+      }
+    }
+    else {
+      $this->isTextPresent('None found.');
+    }
   }
 }
