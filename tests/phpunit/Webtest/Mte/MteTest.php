@@ -207,19 +207,28 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->click("xpath=//center/a/div[text()='Submit Mailing']");
     $this->waitForTextPresent("Find Mailings");
     // directly send schedule mailing -- not working right now
-    $this->openCiviPage("mailing/queue", "reset=1");// verify successful deliveries
+    $this->openCiviPage("mailing/queue", "reset=1");
     $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
     $this->verifyText("xpath=//table//tr[td/a[text()='Successful Deliveries']]/descendant::td[2]", preg_quote("4 (100.00%)"));
-    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0]);
+    $mailingId = $this->urlArg('mid');
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], TRUE, $mailingId);
     $this->postFakeResponses('open', $contacts[0][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], TRUE, $mailingId);
     $this->postFakeResponses('open', $contacts[1][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], TRUE, $mailingId);
     $this->postFakeResponses('hard_bounce', $contacts[2][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], TRUE, $mailingId);
     $this->postFakeResponses('hard_bounce', $contacts[3][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
     $this->_checkActivity('Mandrill Email Open', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], FALSE);
     $this->_checkActivity('Mandrill Email Open', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], FALSE);
     $this->_checkActivity('Mandrill Email Bounce', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], FALSE);
     $this->_checkActivity('Mandrill Email Bounce', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], FALSE);
-    //FIXME : Add Checks
+    $this->openCiviPage("mailing/browse/scheduled", "reset=1&scheduled=true");
+    $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
+    $this->verifyText("xpath=//table//tr[td/a[text()='Intended Recipients']]/descendant::td[2]", preg_quote("4"));
+    $this->verifyText("xpath=//table//tr[td/a[text()='Successful Deliveries']]/descendant::td[2]", preg_quote("2 (50.00%)"));
+    $this->verifyText("xpath=//table//tr[td/a[text()='Tracked Opens']]/descendant::td[2]", preg_quote("2"));
+    $this->verifyText("xpath=//table//tr[td/a[text()='Bounces']]/descendant::td[2]", preg_quote("2 (50.00%)"));
   }
   
   /**
@@ -227,7 +236,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
    * @param $atype
    * @param $contactName
    */
-  public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = TRUE) {
+  public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = TRUE, $mailingId = NULL) {
     $this->openCiviPage('activity/search', 'reset=1', '_qf_Search_refresh');
     $this->select('activity_type_id', "label=$atype");
     $this->type('sort_name', $contactName);
@@ -249,7 +258,14 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
       return FALSE;
     }
     $header = $this->urlArg('id', $this->getAttribute("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']@href"));
-    $queueId = CRM_Core_DAO::singleValueQuery('SELECT mailing_queue_id FROM civicrm_mandrill_activity WHERE activity_id = ' . $header);
+    if ($mailingId) {
+      $cid = $this->urlArg('cid', $this->getAttribute("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']@href"));
+      $queueId = CRM_Core_DAO::singleValueQuery("SELECT ce.id FROM `civicrm_mailing_event_queue` ce
+INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid AND mj.mailing_id = $mailingId");
+    }
+    else {
+      $queueId = CRM_Core_DAO::singleValueQuery('SELECT mailing_queue_id FROM civicrm_mandrill_activity WHERE activity_id = ' . $header);
+    }
     if ($queueId) {
       $queue = new CRM_Mailing_Event_BAO_Queue();
       $queue->id = $queueId;
