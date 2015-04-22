@@ -65,7 +65,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->checkReports('Mail Opened', $lname . ', ' . $fname, 'Opened', 1, $subject);
     $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce');
     $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks', 1, $subject);
-    //FIXME : Add Checks
+    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Successful');
   }
     
   function testSendContributionEmail() {
@@ -289,7 +289,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $response = curl_exec($ch);
   }
 
-  public function checkReports($reportName, $contactName, $name, $count = 0, $subject = NULL) {
+  public function checkReports($reportName, $contactName, $name, $count = 0, $subject = NULL, $mailingDetail = NULL) {
     // Open report list
     $this->openCiviPage('report/list', 'reset=1');    
     // Visit report
@@ -317,6 +317,9 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
         $this->clickLink("xpath=id('$name')/div[3]/table[2]/tbody/tr[1]/td[2]/a");
         $this->isTextPresent('Mandrill Email Sent');
         $this->isTextPresent($subject);
+      }
+      if ($mailingDetail) {
+        $this->isTextPresent($mailingDetail);
       }
     }
     else {
