@@ -1,26 +1,31 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.4                                                |
+ | Mandrill Transactional Email extension			      |
+ | integrates CiviCRM's non-bulk email with the Mandrill service      |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2013                                |
+ | Copyright (C) 2012-2015 JMA Consulting                             |
  +--------------------------------------------------------------------+
- | This file is a part of CiviCRM.                                    |
+ | This program is free software: you can redistribute it and/or      | 
+ | modify  it under the terms of the GNU Affero General Public        |
+ | License as published by the Free Software Foundation, either       |
+ | version 3 of the   License, or (at your option) any later version. |
  |                                                                    |
- | CiviCRM is free software; you can copy, modify, and distribute it  |
- | under the terms of the GNU Affero General Public License           |
- | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
- |                                                                    |
- | CiviCRM is distributed in the hope that it will be useful, but     |
- | WITHOUT ANY WARRANTY; without even the implied warranty of         |
- | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
- | See the GNU Affero General Public License for more details.        |
- |                                                                    |
+ | This program is distributed in the hope that it will be useful,    |
+ | but WITHOUT ANY WARRANTY; without even the implied warranty of     |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      |
+ | GNU Affero General Public License for more details.                |
+ |                                                                    | 
  | You should have received a copy of the GNU Affero General Public   |
- | License and the CiviCRM Licensing Exception along                  |
- | with this program; if not, contact CiviCRM LLC                     |
- | at info[AT]civicrm[DOT]org. If you have questions about the        |
- | GNU Affero General Public License or the licensing of CiviCRM,     |
- | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
+ | License along with this program.  If not,                          |
+ | see <http://www.gnu.org/licenses/>.                                |
+ |                            					      |
+ | Support:https://github.com/JMAConsulting/biz.jmaconsulting.mte/issues      
+ |       						              |
+ | Contact: info@jmaconsulting.biz      			      |
+ |         JMA Consulting      					      |
+ |          215 Spadina Ave, Ste 400      			      |
+ |          Toronto, ON        	 				      |
+ |          Canada   M5T 2C7       				      |
  +--------------------------------------------------------------------+
 *}
 <div class="crm-block crm-form-block crm-smtp-form-block">
@@ -58,6 +63,12 @@
          <td class="label">{$form.smtpPassword.label}</td>
          <td>{$form.smtpPassword.html}<br />
          <span class="description">{ts}If your SMTP server requires authentication, enter your Username and Password here.{/ts}</span>
+         </td>
+       </tr>
+       <tr class="crm-smtp-form-block-used_for">
+         <td class="label">{$form.used_for.label}</td>
+         <td>{$form.used_for.html}<br />
+         <span class="description">{ts}{/ts}</span>
          </td>
        </tr>
        <tr class="crm-smtp-form-block-enable">
