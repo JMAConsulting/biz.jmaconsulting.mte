@@ -39,6 +39,7 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
     
     if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
       $reponse = json_decode($_POST['mandrill_events'], TRUE);
+      CRM_Core_Error::debug_var( '$reponse', $reponse );
       
       if (is_array($reponse) && !empty($reponse)) {
         CRM_Mte_BAO_Mandrill::processMandrillCalls($reponse);

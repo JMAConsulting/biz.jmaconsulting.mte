@@ -22,10 +22,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
 
   public function addMandrillSettings() {
     $this->openCiviPage('mte/smtp', 'reset=1', '_qf_MandrillSmtpSetting_next');
+    global $mandrillSettings;
+    $mandrillSettings['url'] = $this->getValue('mandril_post_url');
     if ($this->isChecked('is_active')) {
       return;
     }
-    global $mandrillSettings;
     $this->type('smtpServer', 'smtp.mandrillapp.com');
     $this->type('smtpPort', '587');
     $this->type('smtpUsername', $mandrillSettings['username']);
@@ -56,8 +57,12 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->fillRichTextField('html_message');
     $this->click('_qf_Email_upload-top');
     $this->waitForElementPresent("//a[@id='crm-contact-actions-link']/span");
-    $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
-    // FIXME: Add code to check Mandrill callbacks
+    $header = $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
+    $this->postFakeResponses('open', $email, 'test@test.com', $subject, $header);
+    $header = $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname);
+    $this->postFakeResponses('click', $email, 'test@test.com', $subject, $header);
+    $header = $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname);    
+    //FIXME : Add Checks
   }
     
   function testSendContributionEmail() {
@@ -113,8 +118,9 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->clickLink("_qf_Main_upload-bottom", "_qf_Confirm_next-bottom");
     $this->click("_qf_Confirm_next-bottom");
     $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
-    // FIXME: Add code to check Mandrill callbacks
+    $header = $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
+    $this->postFakeResponses('hard_bounce', $email, 'test@test.com', 'Invoice - ' . $pageTitle, $header);
+    //FIXME : Add Checks
   }
    
   function testSendBulkEmail() {
@@ -197,8 +203,12 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->openCiviPage("mailing/queue", "reset=1");// verify successful deliveries
     $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
     $this->verifyText("xpath=//table//tr[td/a[text()='Successful Deliveries']]/descendant::td[2]", preg_quote("4 (100.00%)"));
-    $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0]);
-    // FIXME: Add code to check Mandrill callbacks    
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0]);
+    $this->postFakeResponses('open', $contacts[0][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $this->postFakeResponses('open', $contacts[1][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $this->postFakeResponses('hard_bounce', $contacts[2][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $this->postFakeResponses('hard_bounce', $contacts[3][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    //FIXME : Add Checks
   }
   
   /**
@@ -223,5 +233,47 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     foreach ($expected as $label => $value) {
       $this->verifyText("xpath=id('Activity')/div[2]/table[1]/tbody/tr[$label]/td[2]", preg_quote($value));
     }
+    $header = $this->urlArg('id', $this->getAttribute("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']@href"));
+    $queueId = CRM_Core_DAO::singleValueQuery('SELECT mailing_queue_id FROM civicrm_mandrill_activity WHERE activity_id = ' . $header);
+    if ($queueId) {
+      $queue = new CRM_Mailing_Event_BAO_Queue();
+      $queue->id = $queueId;
+      if ($queue->find(TRUE)) {
+        $header = implode(CRM_Core_Config::singleton()->verpSeparator, array($header, 'm', $queue->job_id, $queue->id, $queue->hash));
+      }
+    }
+    return $header;
+  }
+
+  public function postFakeResponses($method, $email, $fromEmail, $subject, $header) {
+    $post[0] = array(
+      'event' => $method,
+      'ts' =>  strtotime(date('YmdHis')),
+      'msg' => array(
+        'metadata' => array('CiviCRM_Mandrill_id' => $header),
+        'email' => $email,
+        'sender' => $fromEmail,
+        'subject' => $subject,
+      ),
+    );
+    switch ($method) {
+      case 'click':
+        $post[0]['url'] = 'http://civicrm.org';
+        break;
+      case 'hard_bounce':
+        $post[0]['msg']['bounce_description'] = 'Not valid Url';
+        break;
+    }
+    
+    global $mandrillSettings;
+    $url = $mandrillSettings['url'];
+    $post = 'mandrill_events=' . json_encode($post);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $response = curl_exec($ch);
   }
 }
