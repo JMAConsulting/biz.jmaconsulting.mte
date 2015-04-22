@@ -175,20 +175,11 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
         CRM_Core_Session::setStatus($testMailStatusMsg . ts('Oops. Your %1 settings are incorrect. No test mail has been sent.', array(1 => strtoupper($mailerName))) . $message, ts("Mail Not Sent"), "error");
       }
     }
-    
-    $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
-      'mandrill_smtp_settings'
-    );
-    
-    if (!empty($mailingBackend)) {
-      CRM_Core_BAO_ConfigSetting::formatParams($formValues, $mailingBackend);
-    }
-    
+        
     // if password is present, encrypt it
     if (!empty($formValues['smtpPassword'])) {
       $formValues['smtpPassword'] = CRM_Utils_Crypt::encrypt($formValues['smtpPassword']);
     }
-
     CRM_Core_BAO_Setting::setItem($formValues,
       CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
       'mandrill_smtp_settings'
