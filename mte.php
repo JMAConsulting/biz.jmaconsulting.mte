@@ -536,5 +536,10 @@ function mte_civicrm_postEmailSend(&$params) {
       'hash' => $header[4],
     );
     CRM_Mailing_Event_BAO_Delivered::create($params);
+    $mandrillActivtyParams = array(
+      'mailing_queue_id' => $header[3],
+      'activity_id' => $header[0],
+    );
+    CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
   }
 }
