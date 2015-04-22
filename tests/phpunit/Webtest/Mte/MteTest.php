@@ -59,9 +59,9 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent("//a[@id='crm-contact-actions-link']/span");
     $header = $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
     $this->postFakeResponses('open', $email, 'test@test.com', $subject, $header);
-    $header = $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname);
     $this->postFakeResponses('click', $email, 'test@test.com', $subject, $header);
-    $header = $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname);    
+    $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname, FALSE);
+    $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname, FALSE);    
     //FIXME : Add Checks
   }
     
@@ -120,6 +120,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->waitForPageToLoad($this->getTimeoutMsec());
     $header = $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
     $this->postFakeResponses('hard_bounce', $email, 'test@test.com', 'Invoice - ' . $pageTitle, $header);
+    $this->_checkActivity('Mandrill Email Bounce', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname, FALSE);
     //FIXME : Add Checks
   }
    
@@ -208,6 +209,10 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->postFakeResponses('open', $contacts[1][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
     $this->postFakeResponses('hard_bounce', $contacts[2][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
     $this->postFakeResponses('hard_bounce', $contacts[3][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
+    $this->_checkActivity('Mandrill Email Open', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], FALSE);
+    $this->_checkActivity('Mandrill Email Open', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], FALSE);
+    $this->_checkActivity('Mandrill Email Bounce', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], FALSE);
+    $this->_checkActivity('Mandrill Email Bounce', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], FALSE);
     //FIXME : Add Checks
   }
   
@@ -216,7 +221,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
    * @param $atype
    * @param $contactName
    */
-  public function _checkActivity($atype, $contactName, $subject, $withContact) {
+  public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = TRUE) {
     $this->openCiviPage('activity/search', 'reset=1', '_qf_Search_refresh');
     $this->select('activity_type_id', "label=$atype");
     $this->type('sort_name', $contactName);
@@ -224,6 +229,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
 
     // View your Activity
     $this->clickLink("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']", "_qf_Activity_cancel", FALSE);
+    $this->isTextPresent($atype);
      $expected = array(
       4 => $subject,
       8 => 'Completed',
@@ -232,6 +238,9 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     );
     foreach ($expected as $label => $value) {
       $this->verifyText("xpath=id('Activity')/div[2]/table[1]/tbody/tr[$label]/td[2]", preg_quote($value));
+    }
+    if (!$isHeader) {
+      return FALSE;
     }
     $header = $this->urlArg('id', $this->getAttribute("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']@href"));
     $queueId = CRM_Core_DAO::singleValueQuery('SELECT mailing_queue_id FROM civicrm_mandrill_activity WHERE activity_id = ' . $header);
