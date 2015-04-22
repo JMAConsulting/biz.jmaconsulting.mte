@@ -106,7 +106,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->click('is_email_receipt');
     $this->type('receipt_from_name', 'Test Email');
     $this->type('receipt_from_email', 'test@test.com');
-    $this->click('_qf_ThankYou_submit_savenext');
+    $this->clickLink('_qf_ThankYou_submit_savenext');
     
     //Open Live Contribution Page
     $this->openCiviPage("contribute/transact", "reset=1&id=$pageId&cid=0", "_qf_Main_upload-bottom");
@@ -124,7 +124,10 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $header = $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
     $this->postFakeResponses('hard_bounce', $email, 'test@test.com', 'Invoice - ' . $pageTitle, $header);
     $this->_checkActivity('Mandrill Email Bounce', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname, FALSE);
-    //FIXME : Add Checks
+    $this->checkReports('Mail Opened', $lname . ', ' . $fname, 'Opened');
+    $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce', 1, 'Invoice - ' . $pageTitle);
+    $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks');
+    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Bounced');
   }
    
   function testSendBulkEmail() {
