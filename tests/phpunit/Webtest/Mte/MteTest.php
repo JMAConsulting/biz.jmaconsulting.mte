@@ -37,4 +37,51 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->clickLink('_qf_MandrillSmtpSetting_refresh_test', '_qf_MandrillSmtpSetting_refresh_test');
     $this->assertElementContainsText('css=.notify-content', 'Your SMTP settings are correct. A test email has been sent to your email address.');
   }
+  
+  function testSendIndividualEmail() {
+    $this->webtestLogin();
+    $this->addMandrillSettings();
+    $fname = 'Anthony' . substr(sha1(rand()), 0, 7);
+    $lname = 'Anderson';
+    $email = $fname . $lname . '@test.com';
+    $this->webtestAddContact($fname, $lname, $email);
+    // Go for Ckeck Your Editor, Click on Send Mail
+    $this->click("//a[@id='crm-contact-actions-link']/span");
+    $this->clickLink('link=Send an Email', 'subject', FALSE);
+    
+    $this->click('subject');
+    $subject = 'Subject_' . substr(sha1(rand()), 0, 7);
+    $this->type('subject', $subject);
+    // Is signature correct? in Editor
+    $this->fillRichTextField('html_message');
+    $this->click('_qf_Email_upload-top');
+    $this->waitForElementPresent("//a[@id='crm-contact-actions-link']/span");
+    $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
+    // FIXME: Add code to check Mandrill callbacks
+  }
+  
+  
+  /**
+   * Helper function for Check Signature in Activity.
+   * @param $atype
+   * @param $contactName
+   */
+  public function _checkActivity($atype, $contactName, $subject, $withContact) {
+    $this->openCiviPage('activity/search', 'reset=1', '_qf_Search_refresh');
+    $this->select('activity_type_id', "label=$atype");
+    $this->type('sort_name', $contactName);
+    $this->clickLink('_qf_Search_refresh', 'Search');
+
+    // View your Activity
+    $this->clickLink("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']", "_qf_Activity_cancel", FALSE);
+     $expected = array(
+      4 => $subject,
+      8 => 'Completed',
+      2 =>  $withContact,
+      10 => 'Urgent',
+    );
+    foreach ($expected as $label => $value) {
+      $this->verifyText("xpath=id('Activity')/div[2]/table[1]/tbody/tr[$label]/td[2]", preg_quote($value));
+    }
+  }
 }
