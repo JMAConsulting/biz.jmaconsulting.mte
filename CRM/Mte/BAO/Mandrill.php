@@ -379,7 +379,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     }
     
     $result = civicrm_api('activity', 'create', $activityParams);
-    if (!empty($header) && !empty($result['id'])) {
+    if (empty($header) && !empty($result['id'])) {
       $header[0] = $result['id'];
     }
   }
