@@ -59,8 +59,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
     // FIXME: Add code to check Mandrill callbacks
   }
-  
-  
+    
   function testSendContributionEmail() {
     $this->webtestLogin();
     $this->addMandrillSettings();
@@ -117,9 +116,93 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
     // FIXME: Add code to check Mandrill callbacks
   }
+   
+  function testSendBulkEmail() {
+    $this->webtestLogin();
+    $this->addMandrillSettings();
+    //----do create test mailing group
+    $this->openCiviPage("group/add", "reset=1", "_qf_Edit_upload");
+
+    // make group name
+    $groupName = 'group_' . substr(sha1(rand()), 0, 7);
+
+    // fill group name
+    $this->type("title", $groupName);
+
+    // fill description
+    $this->type("description", "New mailing group for Webtest");
+
+    // enable Mailing List
+    $this->click("group_type[2]");
+
+    // select Visibility as Public Pages
+    $this->select("visibility", "value=Public Pages");
+
+    // Clicking save.
+    $this->clickLink("_qf_Edit_upload");
+
+    // Is status message correct?
+    $this->waitForText('crm-notification-container', "The Group '$groupName' has been saved.");
+
+    //---- create mailing contact and add to mailing Group
+    $lname = 'Anderson';
+    $contacts = array();
+    for ($i = 0; $i < 4; $i++) {
+      $fname = 'Anthony' . substr(sha1(rand()), 0, 7);
+      $email = $fname . $lname . '@test.com';
+      $this->webtestAddContact($fname, $lname, $email);
+
+      // Get contact id from url.
+      $contactId = $this->urlArg('cid');
+
+      // go to group tab and add to mailing group
+      $this->click("css=li#tab_group a");
+      $this->waitForElementPresent("_qf_GroupContact_next");
+      $this->select("group_id", "$groupName");
+      $this->clickLink("_qf_GroupContact_next", "_qf_GroupContact_next", FALSE);
+      $contacts[] = array($fname, $email);
+    }
+    // configure default mail-box
+    $this->setupDefaultMailbox();
+
+    $this->openCiviPage("a/#/mailing/new");
+
+    //-------select recipients----------
+    $tokens = ' {domain.address}{action.optOutUrl}';
+
+    // fill mailing name
+    $mailingName = substr(sha1(rand()), 0, 7);
+    $this->waitForElementPresent("xpath=//input[@name='mailingName']");
+    $this->type("xpath=//input[@name='mailingName']", "Mailing $mailingName Webtest");
+
+    // Add the test mailing group
+    $this->select2("s2id_crmUiId_8", $groupName, TRUE);
+
+    // do check count for Recipient
+    $this->waitForTextPresent("~4 recipient");
+
+    // fill subject for mailing
+    $this->type("xpath=//input[@name='subject']", "Test subject {$mailingName} for Webtest");
+
+    // HTML format message
+    $HTMLMessage = "This is HTML formatted content for Mailing {$mailingName} Webtest.";
+    $this->fillRichTextField("crmUiId_1", $HTMLMessage . $tokens); 
+    $this->click("xpath=//div[@class='crm-wizard-buttons']/button[text()='Next']");    
+    $this->waitForTextPresent("Mailing $mailingName Webtest");
+    $this->assertChecked("xpath=//input[@id='schedule-send-now']");
+    // click next with nominal content
+    $this->click("xpath=//center/a/div[text()='Submit Mailing']");
+    $this->waitForTextPresent("Find Mailings");
+    // directly send schedule mailing -- not working right now
+    $this->openCiviPage("mailing/queue", "reset=1");// verify successful deliveries
+    $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
+    $this->verifyText("xpath=//table//tr[td/a[text()='Successful Deliveries']]/descendant::td[2]", preg_quote("4 (100.00%)"));
+    $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0]);
+    // FIXME: Add code to check Mandrill callbacks    
+  }
   
   /**
-   * Helper function for Check Signature in Activity.
+   * Helper function for Check contents in Activity.
    * @param $atype
    * @param $contactName
    */
