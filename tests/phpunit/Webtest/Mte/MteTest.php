@@ -61,6 +61,63 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
   }
   
   
+  function testSendContributionEmail() {
+    $this->webtestLogin();
+    $this->addMandrillSettings();
+    $fname = 'Anthony' . substr(sha1(rand()), 0, 7);
+    $lname = 'Anderson';
+    $email = $fname . $lname . '@test.com';
+    $pageTitle = substr(sha1(rand()), 0, 7);
+    $rand = 2 * rand(10, 50);
+    $hash = substr(sha1(rand()), 0, 7);
+
+    // create a new online contribution page
+    // create contribution page with randomized title and default params
+    $pageId = $this->webtestAddContributionPage($hash,
+      $rand,
+      $pageTitle,
+      NULL,
+      TRUE,
+      TRUE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      1,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE,
+      FALSE                                                
+    );
+    $this->openCiviPage('admin/contribute/thankyou', "reset=1&action=update&id=$pageId", '_qf_ThankYou_next');
+    $this->click('is_email_receipt');
+    $this->type('receipt_from_name', 'Test Email');
+    $this->type('receipt_from_email', 'test@test.com');
+    $this->click('_qf_ThankYou_submit_savenext');
+    
+    //Open Live Contribution Page
+    $this->openCiviPage("contribute/transact", "reset=1&id=$pageId&cid=0", "_qf_Main_upload-bottom");
+    $this->type("email-5", $email);
+    $this->type("first_name", $fname);
+    $this->type("last_name", $lname);$streetAddress = "100 Main Street";
+    $this->type("street_address-1", $streetAddress);
+    $this->type("city-1", "San Francisco");
+    $this->type("postal_code-1", "94117");
+    $this->select("country-1", "value=1228");
+    $this->select("state_province-1", "value=1001");
+    $this->clickLink("_qf_Main_upload-bottom", "_qf_Confirm_next-bottom");
+    $this->click("_qf_Confirm_next-bottom");
+    $this->waitForPageToLoad($this->getTimeoutMsec());
+    $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
+    // FIXME: Add code to check Mandrill callbacks
+  }
+  
   /**
    * Helper function for Check Signature in Activity.
    * @param $atype
