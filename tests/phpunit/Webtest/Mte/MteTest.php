@@ -128,6 +128,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce', 1, 'Invoice - ' . $pageTitle);
     $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks');
     $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Bounced');
+    $this->openCiviPage('contact/search', 'reset=1', 'sort_name');
+    $this->type('sort_name', $email);
+    $this->clickLink('_qf_Basic_refresh');
+    $this->clickLink("xpath=id('Basic')//table//tbody/tr[1]/td[11]/span[1]/a[text()='View']");
+    $this->assertTrue($this->isTextPresent('(On Hold)'));
   }
    
   function testSendBulkEmail() {
@@ -231,6 +236,26 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->verifyText("xpath=//table//tr[td/a[text()='Bounces']]/descendant::td[2]", preg_quote("2 (50.00%)"));
   }
   
+  public function testNonCiviMails() {
+    $this->webtestLogin();
+    $this->addMandrillSettings();    
+    $email = 'test' . substr(sha1(rand()), 0, 7) . '@mandrilluser.com';
+    $this->postFakeResponses('open', $email, 'test@test-email.com', 'General Email', NULL);
+    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, FALSE);
+    $this->_checkActivity('Mandrill Email Open', $email, 'General Email', $email, FALSE);
+    
+    
+    $email = 'test' . substr(sha1(rand()), 0, 7) . '@mandrilluser.com';
+    $this->postFakeResponses('hard_bounce', $email, 'test@test-email.com', 'General Email', NULL);
+    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, FALSE);
+    $this->_checkActivity('Mandrill Email Bounce', $email, 'General Email', $email, FALSE);
+    $this->openCiviPage('contact/search', 'reset=1', 'sort_name');
+    $this->type('sort_name', $email);
+    $this->clickLink('_qf_Basic_refresh');
+    $this->clickLink("xpath=id('Basic')//table//tbody/tr[1]/td[11]/span[1]/a[text()='View']");
+    $this->assertTrue($this->isTextPresent('(On Hold)'));
+  }
+  
   /**
    * Helper function for Check contents in Activity.
    * @param $atype
@@ -244,7 +269,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
 
     // View your Activity
     $this->clickLink("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']", "_qf_Activity_cancel", FALSE);
-    $this->isTextPresent($atype);
+    $this->assertTrue($this->isTextPresent($atype));
      $expected = array(
       4 => $subject,
       8 => 'Completed',
@@ -326,23 +351,23 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
       $this->assertElementContainsText("xpath=id('$name')/div[3]/table[3]/tbody/tr[1]/td[1]", "$count", 'Count does not match.');
       switch ($name) {
         case 'Bounce':
-          $this->isTextPresent('Not valid Url ');
+          $this->assertTrue($this->isTextPresent('Not valid Url'));
           break;
         case 'Clicks':
-          $this->isTextPresent('http://civicrm.org');
+          $this->assertTrue($this->isTextPresent('http://civicrm.org'));
           break;
       }
       if ($subject) {
         $this->clickLink("xpath=id('$name')/div[3]/table[2]/tbody/tr[1]/td[2]/a");
-        $this->isTextPresent('Mandrill Email Sent');
-        $this->isTextPresent($subject);
+        $this->assertTrue($this->isTextPresent('Mandrill Email Sent'));
+        $this->assertTrue($this->isTextPresent($subject));
       }
       if ($mailingDetail) {
-        $this->isTextPresent($mailingDetail);
+        $this->assertTrue($this->isTextPresent($mailingDetail));
       }
     }
     else {
-      $this->isTextPresent('None found.');
+      $this->assertTrue($this->isTextPresent('None found.'));
     }
   }
 }
