@@ -38,6 +38,9 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
   
   protected $_testButtonName;
 
+  /**
+   * Build the form object.
+   */
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Mandril Smtp Settings - Outbound Mail'));
     $this->add('text', 'smtpServer', ts('SMTP Server'), NULL, TRUE);
@@ -89,6 +92,9 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
     return empty($errors) ? TRUE : $errors;
   }
   
+  /**
+   * Process the form submission.
+   */
   function postProcess() {
     $formValues = $this->exportValues();
     $buttonName = $this->controller->getButtonName();

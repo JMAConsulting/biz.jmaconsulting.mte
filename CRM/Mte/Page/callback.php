@@ -30,6 +30,12 @@
 
 class CRM_Mte_Page_callback extends CRM_Core_Page {
 	
+  /**
+   * the main function that is called when the page loads,
+   * it decides the which action has to be taken for the page.
+   *
+   * @return null
+   */
   function run() {
     $secretCode = CRM_Utils_Type::escape($_GET['mandrillSecret'], 'String');
     $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
