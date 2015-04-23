@@ -27,6 +27,12 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     if ($this->isChecked('is_active')) {
       return;
     }
+    $this->openCiviPage('admin/domain', 'reset=1&action=update', '_qf_Domain_next_view');
+    $this->type('name', 'test');
+    $this->type('email_name', 'test');
+    $this->type('email_address', 'test@test.com');
+    $this->clickLink('_qf_Domain_next_view');
+    $this->openCiviPage('mte/smtp', 'reset=1', '_qf_MandrillSmtpSetting_next');
     $this->type('smtpServer', 'smtp.mandrillapp.com');
     $this->type('smtpPort', '587');
     $this->type('smtpUsername', $mandrillSettings['username']);
