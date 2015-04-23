@@ -15,11 +15,19 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     );
   }
   
+  /*
+   * Webtest to check Add and check Mandrill Settings
+   *
+   */
   public function testAddMandrillSettings() {
     $this->webtestLogin();
     $this->addMandrillSettings();    
   }
-
+  
+  /*
+   * function to add/check Mandrill Settings
+   *
+   */
   public function addMandrillSettings() {
     $this->openCiviPage('mte/smtp', 'reset=1', '_qf_MandrillSmtpSetting_next');
     global $mandrillSettings;
@@ -45,6 +53,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->assertElementContainsText('css=.notify-content', 'Your SMTP settings are correct. A test email has been sent to your email address.');
   }
   
+  /*
+   * Webtest to catch Open and Clicks when a Individual
+   * email is send
+   *
+   */  
   function testSendIndividualEmail() {
     $this->webtestLogin();
     $this->addMandrillSettings();
@@ -73,7 +86,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks', 1, $subject);
     $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Successful');
   }
-    
+  
+  /*
+   * Webtest to Catch bounce for Contribution Receipt
+   *
+   */
   function testSendContributionEmail() {
     $this->webtestLogin();
     $this->addMandrillSettings();
@@ -141,6 +158,10 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->assertTrue($this->isTextPresent('(On Hold)'));
   }
    
+  /*
+   * Webtest to catch Open and Bounce for Bulk Mailing
+   *
+   */
   function testSendBulkEmail() {
     $this->webtestLogin();
     $this->addMandrillSettings();
@@ -242,6 +263,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->verifyText("xpath=//table//tr[td/a[text()='Bounces']]/descendant::td[2]", preg_quote("2 (50.00%)"));
   }
   
+  /*
+   * Webtest to catch opens when email is being send 
+   * from mandrill app
+   *
+   */
   public function testNonCiviMails() {
     $this->webtestLogin();
     $this->addMandrillSettings();    
@@ -266,6 +292,8 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
    * Helper function for Check contents in Activity.
    * @param $atype
    * @param $contactName
+   *
+   *  return string
    */
   public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = TRUE, $mailingId = NULL) {
     $this->openCiviPage('activity/search', 'reset=1', '_qf_Search_refresh');
@@ -307,6 +335,16 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     return $header;
   }
 
+  /*
+   * function to create fake post of mandrill
+   *
+   * @param string $method    -- method name like Hard Bounce, Open etc
+   * @param string $email     -- Email Address
+   * @param string $fromEmail -- From Email Address
+   * @param string $subject   -- Message Subject 
+   * @param string $header    -- Mandrill Header
+   *
+   */
   public function postFakeResponses($method, $email, $fromEmail, $subject, $header) {
     $post[0] = array(
       'event' => $method,
@@ -339,6 +377,18 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     $response = curl_exec($ch);
   }
 
+  /*
+   * Function to check reports after fake mandill post
+   * to see if Bounces, Opens, Clicks etc are tracked
+   *
+   * @param string  $reportName    -- Mailing Report Name
+   * @param string  $contactName   -- Contact Name
+   * @param string  $name          -- Button Name for report
+   * @param integer $count         -- Count of expected result
+   * @param string  $subject       -- Subject of message
+   * @param integer  $mailingDetail -- Mailing Details
+   *
+   */
   public function checkReports($reportName, $contactName, $name, $count = 0, $subject = NULL, $mailingDetail = NULL) {
     // Open report list
     $this->openCiviPage('report/list', 'reset=1');    

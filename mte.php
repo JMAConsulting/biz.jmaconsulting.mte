@@ -204,6 +204,13 @@ function mte_civicrm_alterMailer(&$mailer, $driver, $params) {
   } 
 }
 
+/*
+ * Function to over-ride mailer settings with Mandrill Smtp settings
+ *
+ * @param object $mailer  -- Object of Mailer defined in OutBound Email Settings
+ * @param array  $params  -- Array of params
+ *
+ */
 function mte_getmailer(&$mailer, &$params = array()) {
   $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
     'mandrill_smtp_settings'
@@ -439,6 +446,9 @@ function mte_targetContactIds($params) {
   return array_unique($targetContactIds);
 }
 
+/**
+ * Implementation of hook_civicrm_alterReportVar
+ */
 function mte_civicrm_alterReportVar($varType, &$var, &$object) {
   $instanceValue = $object->getVar('_instanceValues');
   if (!empty($instanceValue) && 
@@ -501,6 +511,13 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
   }
 }
 
+/*
+ * function to create Mailing Queue when a message is about to send
+ * 
+ * @param string $mandrillHeader  -- Mandrill Header
+ * @param string $toEmail         -- To Email Address
+ *
+ */
 function mte_createQueue(&$mandrillHeader, $toEmail) {
   $mail = new CRM_Mailing_DAO_Mailing();
   $mail->subject = "***All Transactional Emails***";
