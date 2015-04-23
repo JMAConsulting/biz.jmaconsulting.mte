@@ -351,6 +351,9 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     if (!$this->isChecked('fields[mailing_name]')) {
       $this->click('fields[mailing_name]');
     }
+    if ($name == 'Bounce' && !$this->isChecked('fields[bounce_reason]')) {
+      $this->click('fields[bounce_reason]');      
+    }
     // click preview
     $this->clickLink("_qf_{$name}_submit");
     if ($count) {
