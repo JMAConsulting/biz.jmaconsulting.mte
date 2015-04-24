@@ -30,8 +30,7 @@
 *}
 <div class="crm-block crm-form-block crm-smtp-form-block">
 <div id="help">
-
-
+There are two types of emails sent from CiviCRM: bulk emails sent through the CiviMail component, and transactional emails that covers everything else. The Mandrill Email extension can be used to send  email for either or both of these. Some other extensions only look after the delivery of CiviMail emails.
 </div>
 <div id="bySMTP" class="mailoption">
   <fieldset>
