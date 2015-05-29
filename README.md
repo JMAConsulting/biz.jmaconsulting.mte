@@ -1,12 +1,12 @@
 biz.jmaconsulting.mte version 1.5 for CiviCRM 4.2, 4.3, 4.4, 4.5
 ==============================================================
 
-Mandrill Transactional Emails
+Mandrill Email Extension for CiviCRM
 
 See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
 
-Installation instructions for Mandrill Transactional Emails
-===========================================================
+Installation instructions for Mandrill Emails Extension
+=======================================================
 
 * Setup Mandrill
   * Register for or login to your Mandrill account at https://mandrillapp.com/login/
@@ -23,11 +23,11 @@ Installation instructions for Mandrill Transactional Emails
   * If you have not already done so, go to Administer >> System Settings >> Resource URLs
     * Beside Extension Resource URL, enter an appropriate values such as http://yourorg.org/sites/all/modules/Extensions/
   * Click Save.
-* Install Mandrill Transactional Emails extension
+* Install Mandrill Email extension
   * Go to Administer >> Customize Data and Screens >> Manage Extensions.
   * Click on Add tab.
-  * If you do not see Mandrill Transactional Emails in the list of extensions, download it and unzip it into the extensions direction setup above, then return to this page.
-  * Beside Mandrill Transactional Emails, click Download.
+  * If you do not see Mandrill Emails in the list of extensions, download it and unzip it into the extensions direction setup above, then return to this page.
+  * Beside Mandrill Emails, click Download.
   * Review the information, then click Download and Install.
 * Setup From Email address
   * If you have not already done so, go to:
@@ -71,12 +71,12 @@ Disable Instructions
 ====================
 Disabling the extension turns off its functionality but does not remove the software, and the database tables and data created by the extension.
 * Go to Administer >> Customize Data and Screens >> Manage Extensions.
-* Beside Mandrill Transactional Emails on the Extensions tab, click Disable.
+* Beside Mandrill Emails on the Extensions tab, click Disable.
 * On the confirmation page, click Disable.
 
 Uninstall Instructions
 ======================
 Uninstalling the extension removes the changes it made to your database and the data that was inserted into your database to track emails sent via the extension to Mandrill. 
 * Disable the extension following the instructions above.
-* On the Administer >> Customize Data and Screens >> Manage Extensions page, Extensions tab, beside Mandrill Transactional Emails extension, click Uninstall.
+* On the Administer >> Customize Data and Screens >> Manage Extensions page, Extensions tab, beside Mandrill Emails extension, click Uninstall.
 * On the confirmation page, click Uninstall.
