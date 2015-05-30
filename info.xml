@@ -6,18 +6,14 @@
   <description>MTE: Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs.</description>
   <urls>
     <url desc="Support">https://github.com/JMAConsulting/biz.jmaconsulting.mte/issues?state=open</url>
-    <url desc="Main Extension Page">
-      https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-mte-%28Mandrill-Transactional-Emails%29
-    </url>
     <url desc="Installation Instructions for 2.0">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/2.0/README.md</url>
-    <url desc="Documentation">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/2.0/README.md</url>
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>JMA Consulting</author>
     <email>joe.murray@jmaconsulting.biz</email>
   </maintainer>
-  <releaseDate>2014-12-22</releaseDate>
+  <releaseDate>2015-05-29</releaseDate>
   <version>2.0</version>
   <develStage>stable</develStage>
   <compatibility>
@@ -26,11 +22,23 @@
     <ver>4.5</ver>
     <ver>4.6</ver>
   </compatibility>
-  <comments>As of version 4.2.x, CiviCRM provides bounce processing only for bulk emails sent through the CiviMail component. Your domain's email reputation may suffer from your transactional emails - everything sent that doesn't go through CiviMai - bouncing or being marked as spam. In addition, there is no click-through tracking for transactional, non-CiviMail emails. This extension addresses both issues by integrating CiviCRM's transactional emails with an external service called Mandrill. If you use both this Mandrill Transactional Emails extension and the CiviMail component, all of your outbound email will be processed in a CAN-SPAM compliant manner.
-Mandrill is a transactional email API that runs on the email infrastructure that powers MailChimp. Mandrill Transactional Emails allows CiviCRM emails that are not bulk CiviMail messages to be sent through the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs. It is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. CiviCRM's existing SMTP settings can be used to successfully configure outbound email delivery.
-This Mandrill Transactional Emails (mte) extension creates an Activity for each email sent to a person, and processes responses from Mandrill arising from them using a unique tracking identifier inserted into a custom email header.
-Pradeep Nayak and Joe Murray of JMA Consulting authored this extension with the generous sponsorship of Power to Change.
-For support, please see the extension's github issues queue.
+  <comments>This extension provides email delivery for CiviMail and/or other email from CiviCRM via the Mandrill service. 
+  Mandrill is an email service that runs on the email infrastructure that powers MailChimp. 
+  It is a low cost option for email delivery, with no loss of delivery functionality, quality or performance in comparison with alternatives. 
+  
+  Your domain's email reputation may suffer from your transactional emails - everything sent that doesn't go through CiviMail - bouncing or being marked as spam. In addition, there is no click-through tracking for transactional, non-CiviMail emails.
+  Unlike some other Email Delivery integrations for CiviCRM, Mandrill Emails supports sending non-CiviMail as well as CiviMail messages through the service. 
+  This means that it can look after white listing, bounces and other issues, as well as tracking click-throughs for these emails. 
+  
+  Mandrill is free for low-volume use, and has a tiered pricing structure once more than 12k emails are sent per month. 
+  
+  This Mandrill Emails extension creates an Activity for each email sent to a person, and processes responses from Mandrill arising from them using a unique tracking identifier inserted into a custom email header. 
+  
+  Version 1.x supported only transactional emails. Version 2.x adds support for sending CiviMail emails via Mandrill.
+
+  JMA Consulting developed this extension with the generous sponsorship of Power to Change for early versions and MailChimp for version 2.
+  
+  For support, please see the extension's github issues queue.
   </comments>
   <civix>
     <namespace>CRM/Mte</namespace>
