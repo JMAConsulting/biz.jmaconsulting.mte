@@ -42,7 +42,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
    * Build the form object.
    */
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Mandril Smtp Settings - Outbound Mail'));
+    CRM_Utils_System::setTitle(ts('Mandrill SMTP Settings - Outbound Mail'));
     $this->add('text', 'smtpServer', ts('SMTP Server'), NULL, TRUE);
     $this->add('text', 'smtpPort', ts('SMTP Port'), NULL, TRUE);
     $this->addYesNo('smtpAuth', ts('Authentication?'), NULL, TRUE);
@@ -55,7 +55,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
     $this->add('checkbox', 'is_active', ts('Enabled?'));
     $options = array(
       'Transactional Emails' => 1,
-      'CiviCRM Bulk Mailings' => 2
+      'CiviMail Bulk Mailings' => 2
     );
     $this->addCheckBox('used_for', ts('Used For?'), $options,
       NULL, NULL, NULL, NULL,
