@@ -82,7 +82,7 @@ There are two types of emails sent from CiviCRM: bulk emails sent through the Ci
        <tr class="crm-smtp-form-block-notify_group">
          <td class="label">{$form.group_id.label}</td>
          <td>{$form.group_id.html}
-         </br><span class="description">{ts}Group to notify for hard and soft bounce.{/ts}</span>
+         </br><span class="description">{ts}Group to notify for hard and soft bounces.{/ts}</span>
          </td>
        </tr>
     </table>
