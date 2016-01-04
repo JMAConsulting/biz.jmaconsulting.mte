@@ -367,7 +367,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     );
 
     $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
-    if (!empty($sourceContactId['email']['contact_id']) {
+    if (!empty($sourceContactId['email']['contact_id'])) {
       $activityParams['source_contact_id'] = $sourceContactId['email']['contact_id'];
     }
     
