@@ -48,6 +48,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
     $this->addYesNo('smtpAuth', ts('Authentication?'), NULL, TRUE);
     $this->addElement('text', 'smtpUsername', ts('SMTP Username'));
     $this->addElement('password', 'smtpPassword', ts('SMTP Password'));
+    $this->addElement('text', 'subaccount', ts('Mandrill Subaccount'));
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
 
@@ -134,6 +135,10 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
       }
       else {
         $params['auth'] = FALSE;
+      }
+
+      if (! empty($formValues['subaccount'])) {
+        $params['subaccount']['headers'] = $formValues['subaccount'];
       }
       
       // set the localhost value, CRM-3153, CRM-9332
