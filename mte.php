@@ -242,9 +242,14 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
   $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
+  if (property_exists(CRM_Core_Config::singleton(), 'civiVersion')) {
+    $civiVersion = $config->civiVersion;
+  }
+  else {
+    $civiVersion = CRM_Core_BAO_Domain::version();
+  }
   if (!$userID) {
-    $config = CRM_Core_Config::singleton();
-    if (version_compare($config->civiVersion, '4.3.alpha1') < 0) {
+    if (version_compare($civiVersion, '4.3.alpha1') < 0) {
       //FIX: source id for version less that 4.3
       $matches = array();
       preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $params['from'], $matches);
@@ -282,7 +287,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     );
     if (!empty($params['job_id'])) {
       $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
-      if (version_compare('4.4alpha1', CRM_Core_Config::singleton()->civiVersion) > 0) {
+      if (version_compare('4.4alpha1', $civiVersion) > 0) {
         $jobCLassName = 'CRM_Mailing_DAO_Job';
       }
       $activityParams['source_record_id'] = CRM_Core_DAO::getFieldValue($jobCLassName, $params['job_id'], 'mailing_id');
@@ -525,10 +530,16 @@ function mte_createQueue(&$mandrillHeader, $toEmail) {
   $mail->forward_replies = FALSE;
   $mail->auto_responder = FALSE;
   $mail->open_tracking = TRUE;
+  if (property_exists(CRM_Core_Config::singleton(), 'civiVersion')) {
+    $civiVersion = $config->civiVersion;
+  }
+  else {
+    $civiVersion = CRM_Core_BAO_Domain::version();
+  }
   if ($mail->find(TRUE)) {
     $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail);
     $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
-    if (version_compare('4.4alpha1', CRM_Core_Config::singleton()->civiVersion) > 0) {
+    if (version_compare('4.4alpha1', $civiVersion) > 0) {
       $jobCLassName = 'CRM_Mailing_DAO_Job';
     }
     $params = array(
