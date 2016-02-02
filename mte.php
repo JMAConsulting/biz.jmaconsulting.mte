@@ -314,6 +314,14 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
       mte_getmailer($mailer);
     }
   }
+
+  $mailingBackend = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME,
+    'mandrill_smtp_settings'
+  );
+
+  if (! empty($mailingBackend['subaccount'])) {
+    $params['headers']['X-MC-Subaccount'] = $mailingBackend['subaccount'];
+  }
 }
 
 /**
