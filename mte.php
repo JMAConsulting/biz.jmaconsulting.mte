@@ -242,7 +242,8 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
   $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
-  if (property_exists(CRM_Core_Config::singleton(), 'civiVersion')) {
+  $config = CRM_Core_Config::singleton();
+  if (property_exists($config, 'civiVersion')) {
     $civiVersion = $config->civiVersion;
   }
   else {
@@ -538,7 +539,8 @@ function mte_createQueue(&$mandrillHeader, $toEmail) {
   $mail->forward_replies = FALSE;
   $mail->auto_responder = FALSE;
   $mail->open_tracking = TRUE;
-  if (property_exists(CRM_Core_Config::singleton(), 'civiVersion')) {
+  $config = CRM_Core_Config::singleton();
+  if (property_exists($config, 'civiVersion')) {
     $civiVersion = $config->civiVersion;
   }
   else {
