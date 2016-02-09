@@ -547,7 +547,7 @@ function mte_createQueue(&$mandrillHeader, $toEmail) {
     $civiVersion = CRM_Core_BAO_Domain::version();
   }
   if ($mail->find(TRUE)) {
-    $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail);
+    $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail, TRUE);
     $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
     if (version_compare('4.4alpha1', $civiVersion) > 0) {
       $jobCLassName = 'CRM_Mailing_DAO_Job';
