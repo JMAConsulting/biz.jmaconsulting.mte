@@ -346,7 +346,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
   public static function createActivity($value, $context = NULL, &$header = array()) {
     $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
     if (!CRM_Utils_Array::value('contact_id', $sourceContactId['email'])) {
-      continue;
+      return FALSE; 
     }
     $emails = self::retrieveEmailContactId($value['msg']['email']);
     $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
