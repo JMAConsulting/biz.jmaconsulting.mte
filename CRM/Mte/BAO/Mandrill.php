@@ -344,10 +344,6 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    *
    */
   public static function createActivity($value, $context = NULL, &$header = array()) {
-    $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
-    if (!CRM_Utils_Array::value('contact_id', $sourceContactId['email'])) {
-      continue;
-    }
     $emails = self::retrieveEmailContactId($value['msg']['email']);
     $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
     $subject = CRM_Utils_Array::value('subject', $value['msg']) ? $value['msg']['subject'] : "Mandrill Email $bType";
@@ -359,7 +355,6 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
       $subject = ts('Email sent from Mandrill App: ') . $subject;
     }
     $activityParams = array( 
-      'source_contact_id' => $sourceContactId['email']['contact_id'],
       'activity_type_id' => $typeId,
       'subject' => $subject,
       'activity_date_time' => date('YmdHis'),
@@ -370,6 +365,11 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
       'source_record_id' => CRM_Utils_Array::value('mailing_id', $value),
       'details' => CRM_Utils_Array::value('mail_body', $value),
     );
+
+    $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
+    if (!empty($sourceContactId['email']['contact_id'])) {
+      $activityParams['source_contact_id'] = $sourceContactId['email']['contact_id'];
+    }
     
     if (CRM_Utils_Array::value('assignee_contact_id', $value)) {
       $activityParams['assignee_contact_id'] = array_unique($value['assignee_contact_id']);
