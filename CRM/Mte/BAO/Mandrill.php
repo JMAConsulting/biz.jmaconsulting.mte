@@ -271,14 +271,14 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     // changes done for bad data, sometimes there are multiple emails but without contact id   
     foreach ($result['values'] as $emailId => $emailValue) {
       if (CRM_Utils_Array::value('contact_id', $emailValue)) {
-        if (CRM_Utils_Array::value('email', $emails) && $checkUnique) {
-          return FALSE;
-        }
         if (!CRM_Utils_Array::value('email', $emails)) {
           $emails['email'] = $emailValue;
         }
         if (!$checkUnique) {
           $emails['contactIds'][] = $emailValue['contact_id'];
+        }
+        else {
+          break;
         }
       }
     }
