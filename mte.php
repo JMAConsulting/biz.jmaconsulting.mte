@@ -446,15 +446,11 @@ function mte_targetContactIds($params) {
   foreach ($emails as $email) {
     preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $email, $matches);
     if (!empty($matches[0])) {
-      $targetContactID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', trim($matches[0]), 'contact_id', 'email');
-      if (!$targetContactID) {
-        $result = civicrm_api3('contact', 'create', array(
-          'contact_type' => 'Individual',
-          'email' => trim($matches[0]),
-        ));
-        $targetContactID = $result['id'];
-      }
-      $targetContactIds[] = $targetContactID;
+      $targetContacts = self::retrieveEmailContactId(trim($matches[0]));
+      $targetContactIds = array_merge(
+        $targetContactIds, 
+        CRM_Utils_Array::value('contactIds', $targetContacts, array())
+      );
     }
   }
   return array_unique($targetContactIds);
