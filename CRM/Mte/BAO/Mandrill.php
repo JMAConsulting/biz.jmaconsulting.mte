@@ -115,16 +115,16 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             $jobId = $params['job_id'];
           }
           else {
-            $eventQueueID = $header[3];
+            $eventQueueID = trim($header[3]);
             $hash = explode('@', $header[4]);
-            $hash = $hash[0];
-            $jobId = $header[2];
+            $hash = trim($hash[0]);
+            $jobId = trim($header[2]);
           }
           if ($eventQueueID) {
             $mandrillActivtyParams = array(
               'mailing_queue_id' => $eventQueueID,
               'activity_id' => $header[0],
-              );
+            );
             CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
           }
           $msgBody = '';
