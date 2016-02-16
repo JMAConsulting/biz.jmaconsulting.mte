@@ -255,6 +255,8 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     $params = array( 
       'email' => $email,
       'version' => 3,
+      'return' => array('contact_id'),
+      'api.Contact.get' => array('is_deleted' => 0, 'return' => array('id')),
     );
     $result = civicrm_api('email', 'get', $params);
     
@@ -270,7 +272,9 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     
     // changes done for bad data, sometimes there are multiple emails but without contact id   
     foreach ($result['values'] as $emailId => $emailValue) {
-      if (CRM_Utils_Array::value('contact_id', $emailValue)) {
+      if (CRM_Utils_Array::value('contact_id', $emailValue)
+        && $emailValue['api.Contact.get']['count']
+      ) {
         if (!CRM_Utils_Array::value('email', $emails)) {
           $emails['email'] = $emailValue;
         }
