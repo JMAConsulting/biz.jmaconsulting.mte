@@ -80,70 +80,86 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
     }
     
     foreach ($reponse as $value) {
-      //changes done to check if email exists in response array
-      if (in_array($value['event'], $events) && CRM_Utils_Array::value('email', $value['msg'])) {
-        
-        $metaData = CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : NULL;
-        $header = self::extractHeader($metaData);
-        $mail = self::getMailing($header, $jobCLassName);
-        $contacts = array();
-        
-        if ($mail->find(TRUE)) {
-          if (($value['event'] == 'click' && $mail->url_tracking === FALSE) 
-            || ($value['event'] == 'open' && $mail->open_tracking === FALSE)
-          ) {
-            continue;
-          }
-          $emails = self::retrieveEmailContactId($value['msg']['email']);
-          if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
-            continue;
-          }
-          $value['mailing_id'] = $mail->id;          
+      if (!CRM_Utils_Array::value('event', $value)) {
+        // TODO:log error
+        continue;
+      }
+      if (!in_array($value['event'], $events)) {
+        // TODO:log error
+        continue;        
+      }
+      if (!CRM_Utils_Array::value('msg', $value)) {
+        // TODO:log error
+        continue;
+      }
+      if (!CRM_Utils_Array::value('email', $value['msg'])) {
+        // TODO:log error
+        continue;        
+      }
+
+      //changes done to check if email exists in response array        
+      $metaData = CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : NULL;
+      $header = self::extractHeader($metaData);
+      $mail = self::getMailing($header, $jobCLassName);
+      $contacts = array();
+      
+      if ($mail->find(TRUE)) {
+        if (($value['event'] == 'click' && $mail->url_tracking === FALSE) 
+          || ($value['event'] == 'open' && $mail->open_tracking === FALSE)
+        ) {
+          continue;
+        }
+        $emails = self::retrieveEmailContactId($value['msg']['email']);
+        if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
+          // TODO:log error
+          continue;
+        }
+        $value['mailing_id'] = $mail->id;          
           // IF no activity id in header then create new activity
-          if (empty($header[0])) {
-            self::createActivity($value, NULL, $header);
+        if (empty($header[0])) {
+          self::createActivity($value, NULL, $header);
+        }
+        if (empty($header[2])) {
+          $params = array(
+            'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
+            'contact_id' => $emails['email']['contact_id'],
+            'email_id' => $emails['email']['id'],
+          );
+          $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
+          $eventQueueID = $eventQueue->id;
+          $hash = $eventQueue->hash;
+          $jobId = $params['job_id'];
+        }
+        else {
+          $eventQueueID = trim($header[3]);
+          $hash = explode('@', $header[4]);
+          $hash = trim($hash[0]);
+          $jobId = trim($header[2]);
+        }
+        if ($eventQueueID) {
+          $queryParams = array(1 => array($eventQueueID, 'Integer'));
+          $isQueuePresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_mailing_event_queue WHERE id = %1', $queryParams);
+          $queryParams = array(1 => array($header[0], 'Integer'));
+          $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_address WHERE id = %1', $queueParams);
+          if (empty($isQueuePresent) || empty($isActivityPresent)) {
+            // TODO:log error
+            continue;
           }
-          if (empty($header[2])) {
-            $params = array(
-              'job_id' => CRM_Core_DAO::getFieldValue($jobCLassName, $mail->id, 'id', 'mailing_id'),
-              'contact_id' => $emails['email']['contact_id'],
-              'email_id' => $emails['email']['id'],
-            );
-            $eventQueue = CRM_Mailing_Event_BAO_Queue::create($params);
-            $eventQueueID = $eventQueue->id;
-            $hash = $eventQueue->hash;
-            $jobId = $params['job_id'];
-          }
-          else {
-            $eventQueueID = trim($header[3]);
-            $hash = explode('@', $header[4]);
-            $hash = trim($hash[0]);
-            $jobId = trim($header[2]);
-          }
-          if ($eventQueueID) {
-            $queryParams = array(1 => array($eventQueueID, 'Integer'));
-            $isQueuePresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_mailing_event_queue WHERE id = %1', $queryParams);
-            $queryParams = array(1 => array($header[0], 'Integer'));
-            $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_address WHERE id = %1', $queueParams);
-            if (empty($isQueuePresent) || empty($isActivityPresent)) {
-              // TODO:log error
-              continue;
-            }
-            $mandrillActivtyParams = array(
-              'mailing_queue_id' => $eventQueueID,
-              'activity_id' => $header[0],
-            );
-            CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
-          }
-          $msgBody = '';
-          if (!empty($header[0])) { 
-            $msgBody = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $header[0], 'details');
-          }
-          $value['mail_body'] = $msgBody;
-          
-          $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
-          $assignedContacts = array();
-          switch ($value['event']) {
+          $mandrillActivtyParams = array(
+            'mailing_queue_id' => $eventQueueID,
+            'activity_id' => $header[0],
+          );
+          CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
+        }
+        $msgBody = '';
+        if (!empty($header[0])) { 
+          $msgBody = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $header[0], 'details');
+        }
+        $value['mail_body'] = $msgBody;
+        
+        $bType = ucfirst(preg_replace('/_\w+/', '', $value['event']));
+        $assignedContacts = array();
+        switch ($value['event']) {
           case 'open':
             $oe = new CRM_Mailing_Event_BAO_Opened();
             $oe->event_queue_id = $eventQueueID;
@@ -229,12 +245,11 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
             }
             $bType = 'Bounce';
             break;
-          }
+        }
               
-          // create activity for click and open event
-          if ($value['event'] == 'open' || $value['event'] == 'click' || $bType == 'Bounce') {
-            self::createActivity($value, $bType, $header);
-          }
+        // create activity for click and open event
+        if ($value['event'] == 'open' || $value['event'] == 'click' || $bType == 'Bounce') {
+          self::createActivity($value, $bType, $header);
         }
       }
     }
