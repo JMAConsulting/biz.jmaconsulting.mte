@@ -121,6 +121,14 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             $jobId = trim($header[2]);
           }
           if ($eventQueueID) {
+            $queryParams = array(1 => array($eventQueueID, 'Integer'));
+            $isQueuePresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_mailing_event_queue WHERE id = %1', $queryParams);
+            $queryParams = array(1 => array($header[0], 'Integer'));
+            $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_address WHERE id = %1', $queueParams);
+            if (empty($isQueuePresent) || empty($isActivityPresent)) {
+              // TODO:log error
+              continue;
+            }
             $mandrillActivtyParams = array(
               'mailing_queue_id' => $eventQueueID,
               'activity_id' => $header[0],
