@@ -81,19 +81,19 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
     
     foreach ($reponse as $value) {
       if (!CRM_Utils_Array::value('event', $value)) {
-        // TODO:log error
+        self::logErrors('Event is missing in Mandrill response.');
         continue;
       }
       if (!in_array($value['event'], $events)) {
-        // TODO:log error
+        self::logErrors('Event returned by Mandrill is not handled by MTE.');
         continue;        
       }
       if (!CRM_Utils_Array::value('msg', $value)) {
-        // TODO:log error
+        self::logErrors('Msg missing in Mandrill response.');
         continue;
       }
       if (!CRM_Utils_Array::value('email', $value['msg'])) {
-        // TODO:log error
+        self::logErrors('Email missing in message response from Mandrill.');
         continue;        
       }
 
@@ -111,7 +111,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
         }
         $emails = self::retrieveEmailContactId($value['msg']['email']);
         if (!CRM_Utils_Array::value('contact_id', $emails['email'])) {
-          // TODO:log error
+          self::logErrors("Can't find contact for email {$value['msg']['email']}.");
           continue;
         }
         $value['mailing_id'] = $mail->id;          
@@ -142,7 +142,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           $queryParams = array(1 => array($header[0], 'Integer'));
           $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_address WHERE id = %1', $queueParams);
           if (empty($isQueuePresent) || empty($isActivityPresent)) {
-            // TODO:log error
+            self::logErrors("Can't find the contact or mailing related to a callback. Contact, email, or mailing may have been deleted for email {$value['msg']['email']} and mandrill unique id {$header[0]}");
             continue;
           }
           $mandrillActivtyParams = array(
@@ -409,6 +409,20 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     if (empty($header) && !empty($result['id'])) {
       $header[0] = $result['id'];
     }
+  }
+  
+  /*
+   * Function to log Error in ConfigLog
+   *
+   * @access public
+   * @static
+   *
+   * @param string $text - text to print in log
+   *
+   *
+   */
+  public static function logErrors($text) {
+    CRM_Core_Error::debug_var('Mandrill-Error', ts($text));
   }
 }
 
