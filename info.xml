@@ -22,6 +22,7 @@
     <ver>4.4</ver>
     <ver>4.5</ver>
     <ver>4.6</ver>
+    <ver>4.7</ver>
   </compatibility>
   <comments>This extension provides email delivery for CiviMail and/or other email from CiviCRM via the Mandrill service. 
   Mandrill is an email service that runs on the email infrastructure that powers MailChimp. 
