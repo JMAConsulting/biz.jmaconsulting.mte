@@ -1,5 +1,5 @@
-biz.jmaconsulting.mte version 2.0 for CiviCRM 4.2, 4.3, 4.4, 4.5, 4.6
-=====================================================================
+biz.jmaconsulting.mte version 2.0 for CiviCRM 4.2 - 4.7
+=======================================================
 
 Mandrill Emails Extension for CiviCRM
 
