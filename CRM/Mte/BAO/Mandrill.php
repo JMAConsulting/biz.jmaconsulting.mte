@@ -429,7 +429,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    *
    */
   public static function logErrors($text) {
-    CRM_Core_Error::debug_var('Mandrill-Error', ts($text));
+    CRM_Core_Error::debug_var('Mandrill-Error', ts($text), TRUE, TRUE, 'Mandrill');
   }
 }
 
