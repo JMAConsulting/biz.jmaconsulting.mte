@@ -54,9 +54,9 @@ INSERT INTO `civicrm_option_value` (`option_group_id`, {localize field='label'}`
 VALUES (@optionGroupId, {localize}'Secret Code'{/localize}, SUBSTRING(MD5(RAND()) FROM 1 FOR 16), 'Secret Code', 1, {localize}'Mandrill Email Sent'{/localize});
 
 -- MTE-18
-SELECT @civimail := id FROM civicrm_navigation WHERE name = 'System Settings';
+SELECT @civimail := id FROM civicrm_navigation WHERE name = 'System Settings' AND domain_id = {$domainID};
 
-SELECT @outbound_mail := weight FROM civicrm_navigation WHERE parent_id = @civimail and name = 'Outbound Email';
+SELECT @outbound_mail := weight FROM civicrm_navigation WHERE parent_id = @civimail and name = 'Outbound Email' AND domain_id = {$domainID};;
 
 UPDATE civicrm_navigation 
 SET weight = weight + 1
