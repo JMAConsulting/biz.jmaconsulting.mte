@@ -446,7 +446,7 @@ function mte_targetContactIds($params) {
   foreach ($emails as $email) {
     preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $email, $matches);
     if (!empty($matches[0])) {
-      $targetContacts = self::retrieveEmailContactId(trim($matches[0]));
+      $targetContacts = CRM_Mte_BAO_Mandrill::retrieveEmailContactId(trim($matches[0]));
       $targetContactIds = array_merge(
         $targetContactIds, 
         CRM_Utils_Array::value('contactIds', $targetContacts, array())
