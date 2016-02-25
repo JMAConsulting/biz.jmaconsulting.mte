@@ -269,6 +269,13 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     if(!$email) {
       return FALSE;
     }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $matches = array();
+      preg_match('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $email, $matches);
+      if (!empty($matches)) {
+        $email = $matches[0];
+      }
+    }
     $cacheKey = $email . $checkUnique;
     if (CRM_Utils_Array::value($cacheKey, self::$_contacts)) {
       return self::$_contacts[$cacheKey];
