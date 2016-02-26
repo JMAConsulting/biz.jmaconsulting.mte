@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension key="biz.jmaconsulting.mte" type="module">
-  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v2.0.zip</downloadUrl>
+  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.mte/archive/v2.1.beta.zip</downloadUrl>
   <file>mte</file>
   <name>Mandrill Transactional Emails</name>
   <description>Mandrill Emails provides email delivery for CiviMail and/or other email from CiviCRM via the Mandrill service so that it can look after white listing, bounces and other issues, as well as track click-throughs.</description>
   <urls>
     <url desc="Support">https://github.com/JMAConsulting/biz.jmaconsulting.mte/issues?state=open</url>
-    <url desc="Installation Instructions for 2.0">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/2.0/README.md</url>
+    <url desc="Installation Instructions for 2.1">https://github.com/JMAConsulting/biz.jmaconsulting.mte/blob/2.1/README.md</url>
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>JMA Consulting</author>
     <email>joe.murray@jmaconsulting.biz</email>
   </maintainer>
-  <releaseDate>2016-02-25</releaseDate>
+  <releaseDate>2016-02-26</releaseDate>
   <version>2.1</version>
   <develStage>beta</develStage>
   <compatibility>
