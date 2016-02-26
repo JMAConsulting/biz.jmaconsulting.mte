@@ -85,7 +85,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
         continue;
       }
       if (!in_array($value['event'], $events)) {
-        self::logErrors('Event returned by Mandrill is not handled by MTE.');
+        self::logErrors($value['event'] . ' event is not handled by MTE.');
         continue;        
       }
       if (!CRM_Utils_Array::value('msg', $value)) {
