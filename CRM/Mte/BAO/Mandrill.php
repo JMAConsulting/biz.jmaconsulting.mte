@@ -140,7 +140,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           $queryParams = array(1 => array($eventQueueID, 'Integer'));
           $isQueuePresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_mailing_event_queue WHERE id = %1', $queryParams);
           $queryParams = array(1 => array($header[0], 'Integer'));
-          $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_address WHERE id = %1', $queueParams);
+          $isActivityPresent = CRM_Core_DAO::singleValueQuery('SELECT id FROM civicrm_activity WHERE id = %1', $queryParams);
           if (empty($isQueuePresent) || empty($isActivityPresent)) {
             self::logErrors("Can't find the contact or mailing related to a callback. Contact, email, or mailing may have been deleted for email {$value['msg']['email']} and mandrill unique id {$header[0]}");
             continue;
