@@ -5,6 +5,8 @@ Mandrill Emails Extension for CiviCRM
 
 See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-Mandrill-Emails-Extension-for-CiviCRM
 
+Note: Support for this extension is deprecated, and will be discontinued December 31, 2016. Co-maintainer interested in taking over support for extension is welcomed.
+
 Installation instructions for Mandrill Emails Extension
 =======================================================
 
