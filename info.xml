@@ -15,7 +15,7 @@
   </maintainer>
   <releaseDate>2016-02-26</releaseDate>
   <version>2.1</version>
-  <develStage>beta</develStage>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>4.2</ver>
     <ver>4.3</ver>
