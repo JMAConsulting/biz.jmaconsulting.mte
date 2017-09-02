@@ -145,11 +145,11 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             self::logErrors("Can't find the contact or mailing related to a callback. Contact, email, or mailing may have been deleted for email {$value['msg']['email']} and mandrill unique id {$header[0]}");
             continue;
           }
-          $mandrillActivtyParams = array(
+          $mandrillActivityParams = array(
             'mailing_queue_id' => $eventQueueID,
             'activity_id' => $header[0],
           );
-          CRM_Mte_BAO_MandrillActivity::create($mandrillActivtyParams);
+          CRM_Mte_BAO_MandrillActivity::create($mandrillActivityParams);
         }
         $msgBody = '';
         if (!empty($header[0])) { 
