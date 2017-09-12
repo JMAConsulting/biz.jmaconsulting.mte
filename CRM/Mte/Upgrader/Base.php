@@ -283,7 +283,7 @@ class CRM_Mte_Upgrader_Base {
     if (is_array($files)) {
       $smarty = CRM_Core_Smarty::singleton();
       foreach ($files as $file) {
-        CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch($file), NULL, TRUE);
+        CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch($file), NULL, TRUE);
       }
     }
     $files = glob($this->extensionDir . '/xml/*_install.xml');
