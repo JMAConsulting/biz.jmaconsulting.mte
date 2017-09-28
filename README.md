@@ -16,14 +16,14 @@ Installation instructions for Mandrill Emails Extension
   * Click on Settings (Gear icon top-right) >> SMTP & API Credentials.
   * Click +New API Key
   * Note SMTP Credentials, or leave window tab open for a few steps.
-* Setup Extensions Directory 
-  * If you have not already done so, go to Administer >> System Settings >> Directories
-    * Set an appropriate value for CiviCRM Extensions Directory. For example, for Drupal, /path/to/drupalroot/sites/all/modules/Extensions/
+* If you have not already done so, setup Extensions Directory 
+  * Go to Administer >> System Settings >> Directories
+    * Set an appropriate value for CiviCRM Extensions Directory. For example, for Drupal, [civicrm.files]/ext/
     * In a different window, ensure the directory exists and is readable by your web server process.
   * Click Save.
-* Setup Extensions Resources URL
-  * If you have not already done so, go to Administer >> System Settings >> Resource URLs
-    * Beside Extension Resource URL, enter an appropriate values such as http://yourorg.org/sites/all/modules/Extensions/
+* If you have not already done so, setup Extensions Resources URL
+  * Go to Administer >> System Settings >> Resource URLs
+    * Beside Extension Resource URL, enter an appropriate values such as [civicrm.files]/ext/
   * Click Save.
 * Install Mandrill Email extension
   * Go to Administer >> Customize Data and Screens >> Manage Extensions.
