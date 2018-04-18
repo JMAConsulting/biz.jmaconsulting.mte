@@ -82,9 +82,9 @@ There are two types of emails sent from CiviCRM: bulk emails sent through the Ci
          <td>{$form.is_active.html}<br />
          </td>
        </tr>
-       <tr class="crm-smtp-form-block-mandril_post_url">
-         <td class="label">{$form.mandril_post_url.label}</td>
-         <td>{$form.mandril_post_url.html}</td>
+       <tr class="crm-smtp-form-block-mandrill_post_url">
+         <td class="label">{$form.mandrill_post_url.label}</td>
+         <td>{$form.mandrill_post_url.html}</td>
        </tr>   
        <tr class="crm-smtp-form-block-notify_group">
          <td class="label">{$form.group_id.label}</td>

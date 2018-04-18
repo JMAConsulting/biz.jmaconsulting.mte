@@ -31,7 +31,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
   public function addMandrillSettings() {
     $this->openCiviPage('mte/smtp', 'reset=1', '_qf_MandrillSmtpSetting_next');
     global $mandrillSettings;
-    $mandrillSettings['url'] = $this->getValue('mandril_post_url');
+    $mandrillSettings['url'] = $this->getValue('mandrill_post_url');
     if ($this->isChecked('is_active')) {
       return;
     }

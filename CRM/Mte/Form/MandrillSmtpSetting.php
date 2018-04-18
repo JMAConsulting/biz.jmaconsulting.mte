@@ -63,7 +63,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
       array('&nbsp;&nbsp;', '&nbsp;&nbsp;', '<br/>') 
     );
     
-    $element = $this->add('text', 'mandril_post_url', ts('Mandrill Post to URL'));
+    $element = $this->add('text', 'mandrill_post_url', ts('Mandrill Post to URL'));
     $element->freeze();
     
     // add select for groups
@@ -220,7 +220,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
         }
       }
       $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
-      $this->_defaults['mandril_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', 
+      $this->_defaults['mandrill_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', 
         "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
     }
     return $this->_defaults;
