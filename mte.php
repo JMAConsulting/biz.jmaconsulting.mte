@@ -232,7 +232,7 @@ function mte_getmailer(&$mailer, &$params = array()) {
  * To send headers in mail and also create activity
  */
 function mte_civicrm_alterMailParams(&$params, $context = NULL) {
-  if ($context != 'civimail') {
+  if (!in_array($context, array('civimail', 'flexmailer'))) {
     CRM_Core_Smarty::singleton()->assign('alterMailer', 'ignore');
   }
   if (!mte_checkSettings($context)) {
@@ -266,7 +266,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     }
   }
 
-  if ($context == 'civimail' && CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
+  if (in_array($context, array('civimail', 'flexmailer')) && CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
     $activityParams = array( 
       'id' => CRM_Mte_BAO_Mandrill::$_mailingActivityId,
       'target_contact_id' => mte_targetContactIds($params),
@@ -298,7 +298,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   if(CRM_Utils_Array::value('id', $result)){
     $params['activityId'] = $mandrillHeader = $result['id'];
     // include verp in header incase of bulk mailing
-    if ($context == 'civimail') {
+    if (in_array($context, array('civimail', 'flexmailer'))) {
       $mandrillHeader .= CRM_Core_Config::singleton()->verpSeparator . CRM_Utils_Array::value('Return-Path', $params);
     }
     else {
@@ -307,7 +307,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     }
     $params['headers']['X-MC-Metadata'] = '{"CiviCRM_Mandrill_id": "' . $mandrillHeader . '" }';
     CRM_Core_Smarty::singleton()->assign('alterMailer', 1);
-    if ($context == 'civimail' && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
+    if (in_array($context, array('civimail', 'flexmailer')) && !CRM_Mte_BAO_Mandrill::$_mailingActivityId) {
       CRM_Mte_BAO_Mandrill::$_mailingActivityId = $result['id'];
     }
     if (!method_exists(CRM_Utils_Hook::singleton(), 'alterMail')) {
