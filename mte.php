@@ -588,9 +588,8 @@ function mte_civicrm_postEmailSend(&$params) {
 /**
  * Implementation of hook_civicrm_idsException().
  *
- * Prevent values on my form from being processed by the IDS
+ * Prevent webhook JSON input being stopped by IDS.
  */
 function mte_civicrm_idsException(&$skip) {
-  Civi::log()->debug(__FUNCTION__ . ' hook called.');
   $skip[] = '/civicrm/ajax/mte/callback';
 }
