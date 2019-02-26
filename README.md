@@ -1,11 +1,7 @@
-biz.jmaconsulting.mte version 2.0 for CiviCRM 4.2 - 4.7
-=======================================================
+biz.jmaconsulting.mte - Mandrill Emails Extension for CiviCRM
+=============================================================
 
-Mandrill Emails Extension for CiviCRM
-
-See https://github.com/JMAConsulting/biz.jmaconsulting.mte/wiki/About-Mandrill-Emails-Extension-for-CiviCRM
-
-Note: Support for this extension is deprecated, and will be discontinued December 31, 2016. Co-maintainer interested in taking over support for extension is welcomed.
+This CiviCRM extension creates an Activity for each email sent to a person, and processes responses from Mandrill arising from them using a unique tracking identifier inserted into a custom email header, as well as adding support for click-through tracking, deliveries and message views ("opens"). This extension was previously named Mandrill Transactional Emails.
 
 Installation instructions for Mandrill Emails Extension
 =======================================================

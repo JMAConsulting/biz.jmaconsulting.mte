@@ -242,6 +242,14 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
   $userID = $session->get('userID');
   $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
   $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
+
+  //mathavan@vedaconsulting.co.uk, 28/03/2018. 
+  //In Civi, hook_civicrm_alterMailParams would call while printing PDF as well. 
+  //we cannot expect toEmail from params when printing PDF(Invoice), which cause DB Constraint error while mte_createQueue();
+  if (empty($params['toEmail'])) {
+    return FALSE;
+  }
+
   $config = CRM_Core_Config::singleton();
   if (property_exists($config, 'civiVersion')) {
     $civiVersion = $config->civiVersion;
@@ -576,4 +584,13 @@ function mte_civicrm_postEmailSend(&$params) {
     );
     CRM_Mte_BAO_MandrillActivity::create($mandrillActivityParams);
   }
+}
+
+/**
+ * Implementation of hook_civicrm_idsException().
+ *
+ * Prevent values on my form from being processed by the IDS
+ */
+function mte_civicrm_idsException(&$skip) {
+  $skip[] = 'civicrm/ajax/mte/callback';
 }
