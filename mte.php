@@ -585,3 +585,11 @@ function mte_civicrm_postEmailSend(&$params) {
     CRM_Mte_BAO_MandrillActivity::create($mandrillActivityParams);
   }
 }
+/**
+ * Implementation of hook_civicrm_idsException().
+ *
+ * Prevent values on my form from being processed by the IDS
+ */
+function mte_civicrm_idsException(&$skip) {
+  $skip[] = 'civicrm/ajax/mte/callback';
+}
