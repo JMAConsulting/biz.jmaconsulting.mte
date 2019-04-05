@@ -86,7 +86,7 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     $this->ctx->log->info('Applying update 4201');
     // this path is relative to the extension base dir
     $this->executeSqlFile('sql/upgrade_4201.sql');
-    return TRUE;
+    return true;
   } 
 
   /**
@@ -103,11 +103,11 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     // rebuild menu items
     CRM_Core_Menu::store();
     
-    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
-    $url = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
+    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', true);
+    $url = CRM_Utils_System::url('civicrm/ajax/mte/callback', "mandrillSecret={$mandrillSecret['Secret Code']}", true, null, false, true);
    
     CRM_Core_Session::setStatus(ts("The URL that Mandrill needs to post to has changed during this upgrade. You need to reconfigure the webhook for Mandrill to use the following URL in Post to URL: $url"));
-    return TRUE;
+    return true;
   } 
   /**
    * Example: Run an external SQL script
@@ -119,7 +119,7 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     $this->ctx->log->info('Applying update 4203');
     // this path is relative to the extension base dir
     $this->executeSqlFile('sql/upgrade_4203.sql');
-    return TRUE;
+    return true;
   } 
 
   /**
@@ -148,7 +148,7 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
         'mandrill_smtp_settings'
       );
     }
-    return TRUE;
+    return true;
   } 
 
   /**
@@ -186,7 +186,7 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
         );
       }
     }
-    return TRUE;
+    return true;
   } 
 
   /**
@@ -201,17 +201,17 @@ class CRM_Mte_Upgrader extends CRM_Mte_Upgrader_Base {
     $mail = new CRM_Mailing_DAO_Mailing();
     $mail->domain_id = CRM_Core_Config::domainID();
     $mail->subject = "***All Transactional Emails***";
-    $mail->url_tracking = TRUE;
-    $mail->forward_replies = FALSE;
-    $mail->auto_responder = FALSE;
-    $mail->open_tracking = TRUE;
-    if ($mail->find(TRUE)) {
+    $mail->url_tracking = true;
+    $mail->forward_replies = false;
+    $mail->auto_responder = false;
+    $mail->open_tracking = true;
+    if ($mail->find(true)) {
       $mail->name = ts('Transaction Emails');
       $mail->save();
     }
-    $url = CRM_Utils_System::url('civicrm/mte/smtp', 'reset=1', TRUE, NULL, FALSE, TRUE);
+    $url = CRM_Utils_System::url('civicrm/mte/smtp', 'reset=1', true, null, false, true);
     CRM_Core_Session::setStatus(ts("Update the <a href={$url}>Mandrill settings</a> to configure it to use for Transactional Email and/or Civi Bulk Mail."));
-    return TRUE;
+    return true;
   } 
 
   /**

@@ -46,7 +46,7 @@ class CRM_Mte_BAO_MandrillActivity extends CRM_Mte_DAO_MandrillActivity {
   public static function &create(&$params) {
     $dao = new CRM_Mte_DAO_MandrillActivity();
     $dao->copyValues($params);
-    if (!$dao->find(TRUE)) {
+    if (!$dao->find(true)) {
       $dao->save();
     }
     return $dao;

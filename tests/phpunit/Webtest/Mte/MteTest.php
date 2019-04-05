@@ -67,7 +67,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->webtestAddContact($fname, $lname, $email);
     // Go for Ckeck Your Editor, Click on Send Mail
     $this->click("//a[@id='crm-contact-actions-link']/span");
-    $this->clickLink('link=Send an Email', 'subject', FALSE);
+    $this->clickLink('link=Send an Email', 'subject', false);
     
     $this->click('subject');
     $subject = 'Subject_' . substr(sha1(rand()), 0, 7);
@@ -79,12 +79,12 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $header = $this->_checkActivity('Mandrill Email Sent', $email, $subject, $lname . ', ' . $fname);
     $this->postFakeResponses('open', $email, 'test@test.com', $subject, $header);
     $this->postFakeResponses('click', $email, 'test@test.com', $subject, $header);
-    $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname, FALSE);
-    $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname, FALSE);
+    $this->_checkActivity('Mandrill Email Open', $email, $subject, $lname . ', ' . $fname, false);
+    $this->_checkActivity('Mandrill Email Click', $email, $subject, $lname . ', ' . $fname, false);
     $this->checkReports('Mail Opened', $lname . ', ' . $fname, 'Opened', 1, $subject);
     $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce');
     $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks', 1, $subject);
-    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Successful');
+    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, null, 'Successful');
   }
   
   /*
@@ -106,24 +106,24 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $pageId = $this->webtestAddContributionPage($hash,
       $rand,
       $pageTitle,
-      NULL,
-      TRUE,
-      TRUE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
+      null,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
       1,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE,
-      FALSE                                                
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false                                                
     );
     $this->openCiviPage('admin/contribute/thankyou', "reset=1&action=update&id=$pageId", '_qf_ThankYou_next');
     $this->click('is_email_receipt');
@@ -146,11 +146,11 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->waitForPageToLoad($this->getTimeoutMsec());
     $header = $this->_checkActivity('Mandrill Email Sent', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname);
     $this->postFakeResponses('hard_bounce', $email, 'test@test.com', 'Invoice - ' . $pageTitle, $header);
-    $this->_checkActivity('Mandrill Email Bounce', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname, FALSE);
+    $this->_checkActivity('Mandrill Email Bounce', $email, 'Invoice - ' . $pageTitle, $lname . ', ' . $fname, false);
     $this->checkReports('Mail Opened', $lname . ', ' . $fname, 'Opened');
     $this->checkReports('Mail Bounces', $lname . ', ' . $fname, 'Bounce', 1, 'Invoice - ' . $pageTitle);
     $this->checkReports('Mail Clickthroughs', $lname . ', ' . $fname, 'Clicks');
-    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, NULL, 'Bounced');
+    $this->checkReports('Mailing Details', $lname . ', ' . $fname, 'Detail', 1, null, 'Bounced');
     $this->openCiviPage('contact/search', 'reset=1', 'sort_name');
     $this->type('sort_name', $email);
     $this->clickLink('_qf_Basic_refresh');
@@ -204,7 +204,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
       $this->click("css=li#tab_group a");
       $this->waitForElementPresent("_qf_GroupContact_next");
       $this->select("group_id", "$groupName");
-      $this->clickLink("_qf_GroupContact_next", "_qf_GroupContact_next", FALSE);
+      $this->clickLink("_qf_GroupContact_next", "_qf_GroupContact_next", false);
       $contacts[] = array($fname, $email);
     }
     // configure default mail-box
@@ -221,7 +221,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->type("xpath=//input[@name='mailingName']", "Mailing $mailingName Webtest");
 
     // Add the test mailing group
-    $this->select2("s2id_crmUiId_8", $groupName, TRUE);
+    $this->select2("s2id_crmUiId_8", $groupName, true);
 
     // do check count for Recipient
     $this->waitForTextPresent("~4 recipient");
@@ -243,18 +243,18 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
     $this->verifyText("xpath=//table//tr[td/a[text()='Successful Deliveries']]/descendant::td[2]", preg_quote("4 (100.00%)"));
     $mailingId = $this->urlArg('mid');
-    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], TRUE, $mailingId);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], true, $mailingId);
     $this->postFakeResponses('open', $contacts[0][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
-    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], TRUE, $mailingId);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], true, $mailingId);
     $this->postFakeResponses('open', $contacts[1][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
-    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], TRUE, $mailingId);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], true, $mailingId);
     $this->postFakeResponses('hard_bounce', $contacts[2][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
-    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], TRUE, $mailingId);
+    $header = $this->_checkActivity('Mandrill Email Sent', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], true, $mailingId);
     $this->postFakeResponses('hard_bounce', $contacts[3][1], 'test@test.com', "Test subject {$mailingName} for Webtest", $header);
-    $this->_checkActivity('Mandrill Email Open', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], FALSE);
-    $this->_checkActivity('Mandrill Email Open', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], FALSE);
-    $this->_checkActivity('Mandrill Email Bounce', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], FALSE);
-    $this->_checkActivity('Mandrill Email Bounce', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], FALSE);
+    $this->_checkActivity('Mandrill Email Open', $contacts[0][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[0][0], false);
+    $this->_checkActivity('Mandrill Email Open', $contacts[1][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[1][0], false);
+    $this->_checkActivity('Mandrill Email Bounce', $contacts[2][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[2][0], false);
+    $this->_checkActivity('Mandrill Email Bounce', $contacts[3][1], "Test subject {$mailingName} for Webtest", $lname . ', ' . $contacts[3][0], false);
     $this->openCiviPage("mailing/browse/scheduled", "reset=1&scheduled=true");
     $this->clickLink("xpath=//table//tbody/tr[td[1]/text()='Mailing $mailingName Webtest']/descendant::a[text()='Report']");
     $this->verifyText("xpath=//table//tr[td/a[text()='Intended Recipients']]/descendant::td[2]", preg_quote("4"));
@@ -272,15 +272,15 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
     $this->webtestLogin();
     $this->addMandrillSettings();    
     $email = 'test' . substr(sha1(rand()), 0, 7) . '@mandrilluser.com';
-    $this->postFakeResponses('open', $email, 'test@test-email.com', 'General Email', NULL);
-    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, FALSE);
-    $this->_checkActivity('Mandrill Email Open', $email, 'General Email', $email, FALSE);
+    $this->postFakeResponses('open', $email, 'test@test-email.com', 'General Email', null);
+    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, false);
+    $this->_checkActivity('Mandrill Email Open', $email, 'General Email', $email, false);
     
     
     $email = 'test' . substr(sha1(rand()), 0, 7) . '@mandrilluser.com';
-    $this->postFakeResponses('hard_bounce', $email, 'test@test-email.com', 'General Email', NULL);
-    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, FALSE);
-    $this->_checkActivity('Mandrill Email Bounce', $email, 'General Email', $email, FALSE);
+    $this->postFakeResponses('hard_bounce', $email, 'test@test-email.com', 'General Email', null);
+    $this->_checkActivity('Mandrill Email Sent', $email, 'Email sent from Mandrill App: General Email', $email, false);
+    $this->_checkActivity('Mandrill Email Bounce', $email, 'General Email', $email, false);
     $this->openCiviPage('contact/search', 'reset=1', 'sort_name');
     $this->type('sort_name', $email);
     $this->clickLink('_qf_Basic_refresh');
@@ -295,14 +295,14 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
    *
    *  return string
    */
-  public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = TRUE, $mailingId = NULL) {
+  public function _checkActivity($atype, $contactName, $subject, $withContact, $isHeader = true, $mailingId = null) {
     $this->openCiviPage('activity/search', 'reset=1', '_qf_Search_refresh');
     $this->select('activity_type_id', "label=$atype");
     $this->type('sort_name', $contactName);
     $this->clickLink('_qf_Search_refresh', 'Search');
 
     // View your Activity
-    $this->clickLink("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']", "_qf_Activity_cancel", FALSE);
+    $this->clickLink("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']", "_qf_Activity_cancel", false);
     $this->assertTrue($this->isTextPresent($atype));
      $expected = array(
       4 => $subject,
@@ -314,7 +314,7 @@ class WebTest_Mte_MteTest extends CiviSeleniumTestCase {
       $this->verifyText("xpath=id('Activity')/div[2]/table[1]/tbody/tr[$label]/td[2]", preg_quote($value));
     }
     if (!$isHeader) {
-      return FALSE;
+      return false;
     }
     $header = $this->urlArg('id', $this->getAttribute("xpath=id('Search')/div[3]/div/div[2]/table/tbody/tr[2]/td[9]/span/a[text()='View']@href"));
     if ($mailingId) {
@@ -328,7 +328,7 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     if ($queueId) {
       $queue = new CRM_Mailing_Event_BAO_Queue();
       $queue->id = $queueId;
-      if ($queue->find(TRUE)) {
+      if ($queue->find(true)) {
         $header = implode(CRM_Core_Config::singleton()->verpSeparator, array($header, 'm', $queue->job_id, $queue->id, $queue->hash));
       }
     }
@@ -369,7 +369,7 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     $url = $mandrillSettings['url'];
     $post = 'mandrill_events=' . json_encode($post);
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -389,7 +389,7 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
    * @param integer  $mailingDetail -- Mailing Details
    *
    */
-  public function checkReports($reportName, $contactName, $name, $count = 0, $subject = NULL, $mailingDetail = NULL) {
+  public function checkReports($reportName, $contactName, $name, $count = 0, $subject = null, $mailingDetail = null) {
     // Open report list
     $this->openCiviPage('report/list', 'reset=1');    
     // Visit report
@@ -397,7 +397,7 @@ INNER JOIN civicrm_mailing_job mj ON mj.id = ce.job_id and ce.contact_id = $cid 
     $this->click("xpath=//div[@id='mainTabContainer']/ul/li[3]/a");
     $this->waitForElementPresent('sort_name_value');
     $this->type('sort_name_value', $contactName);
-    $this->clickLink("xpath=//div[@id='mainTabContainer']/ul/li[1]/a", 'fields[mailing_name]', FALSE);
+    $this->clickLink("xpath=//div[@id='mainTabContainer']/ul/li[1]/a", 'fields[mailing_name]', false);
     if (!$this->isChecked('fields[mailing_name]')) {
       $this->click('fields[mailing_name]');
     }
