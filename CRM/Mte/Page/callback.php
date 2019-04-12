@@ -38,13 +38,13 @@ class CRM_Mte_Page_callback extends CRM_Core_Page {
    */
   function run() {
     $secretCode = CRM_Utils_Type::escape($_GET['mandrillSecret'], 'String');
-    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+    $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', true);
     if ($secretCode !== $mandrillSecret['Secret Code']) {
-      return FALSE;
+      return false;
     }
     
     if (CRM_Utils_Array::value('mandrill_events', $_POST)) {
-      $reponse = json_decode($_POST['mandrill_events'], TRUE);
+      $reponse = json_decode($_POST['mandrill_events'], true);
       
       if (is_array($reponse) && !empty($reponse)) {
         CRM_Mte_BAO_Mandrill::processMandrillCalls($reponse);

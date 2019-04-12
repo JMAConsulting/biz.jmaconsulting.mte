@@ -32,10 +32,10 @@
 /**
  * (Delegated) Implementation of hook_civicrm_config
  */
-function _mte_civix_civicrm_config(&$config = NULL) {
-  static $configured = FALSE;
+function _mte_civix_civicrm_config(&$config = null) {
+  static $configured = false;
   if ($configured) return;
-  $configured = TRUE;
+  $configured = true;
 
   $template =& CRM_Core_Smarty::singleton();
 
@@ -116,7 +116,7 @@ function _mte_civix_civicrm_disable() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function _mte_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function _mte_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = null) {
   if ($upgrader = _mte_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
@@ -124,7 +124,7 @@ function _mte_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 
 function _mte_civix_upgrader() {
   if (!file_exists(__DIR__.'/CRM/Mte/Upgrader.php')) {
-    return NULL;
+    return null;
   } else {
     return CRM_Mte_Upgrader_Base::instance();
   }
@@ -155,7 +155,7 @@ function _mte_civix_find_files($dir, $pattern) {
       }
     }
     if ($dh = opendir($subdir)) {
-      while (FALSE !== ($entry = readdir($dh))) {
+      while (false !== ($entry = readdir($dh))) {
         $path = $subdir . DIRECTORY_SEPARATOR . $entry;
         if ($entry{0} == '.') {
         } elseif (is_dir($path)) {
@@ -210,7 +210,7 @@ function _mte_civix_glob($pattern) {
  * $item - menu you need to insert (parent/child attributes will be filled for you)
  * $parentId - used internally to recurse in the menu structure
  */
-function _mte_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = NULL) {
+function _mte_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = null) {
   static $navId;
 
   // If we are done going down the path, insert menu

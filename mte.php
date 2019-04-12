@@ -56,11 +56,11 @@ function mte_civicrm_install() {
   $mailingParams = array(
     'subject' => '***All Transactional Emails***',
     'name' => ts('Transaction Emails'),
-    'url_tracking' => TRUE,
-    'forward_replies' => FALSE,
-    'auto_responder' => FALSE,
-    'open_tracking' => TRUE,
-    'is_completed' => FALSE,
+    'url_tracking' => true,
+    'forward_replies' => false,
+    'auto_responder' => false,
+    'open_tracking' => true,
+    'is_completed' => false,
   );
 
   //create entry in civicrm_mailing
@@ -81,9 +81,9 @@ function mte_civicrm_install() {
     $jobCLassName = 'CRM_Mailing_DAO_Job';
   }
   
-  $changeENUM = FALSE;
+  $changeENUM = false;
   if (version_compare('4.5alpha1', $civiVersion) > 0) {
-    $changeENUM = TRUE;
+    $changeENUM = true;
   }
   CRM_Core_Smarty::singleton()->assign('changeENUM', $changeENUM);
   _mte_civix_civicrm_install();
@@ -125,7 +125,7 @@ function mte_civicrm_install() {
       $bounceType->save();
     }
   }
-  return TRUE;
+  return true;
 }
 
 /**
@@ -176,7 +176,7 @@ function mte_civicrm_disable() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function mte_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function mte_civicrm_upgrade($op, CRM_Queue_Queue $queue = null) {
   return _mte_civix_civicrm_upgrade($op, $queue);
 }
 
@@ -221,7 +221,7 @@ function mte_getmailer(&$mailer, &$params = array()) {
     $params['port'] = $mailingBackend['smtpPort'];
     $params['username'] = trim($mailingBackend['smtpUsername']);
     $params['password'] = CRM_Utils_Crypt::decrypt($mailingBackend['smtpPassword']);
-    $params['auth'] = ($mailingBackend['smtpAuth']) ? TRUE : FALSE;
+    $params['auth'] = ($mailingBackend['smtpAuth']) ? true : false;
     $mailer = Mail::factory('smtp', $params);
     CRM_Core_Smarty::singleton()->assign('alterMailer', 0);
   }
@@ -231,23 +231,23 @@ function mte_getmailer(&$mailer, &$params = array()) {
  * Implementation of hook_civicrm_alterMailParams( )
  * To send headers in mail and also create activity
  */
-function mte_civicrm_alterMailParams(&$params, $context = NULL) {
+function mte_civicrm_alterMailParams(&$params, $context = null) {
   if (!in_array($context, array('civimail', 'flexmailer'))) {
     CRM_Core_Smarty::singleton()->assign('alterMailer', 'ignore');
   }
   if (!mte_checkSettings($context)) {
-    return FALSE;
+    return false;
   }
   $session = CRM_Core_Session::singleton();
   $userID = $session->get('userID');
-  $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+  $activityTypes = CRM_Core_PseudoConstant::activityType(true, false, false, 'name');
   $params['toEmail'] = trim($params['toEmail']); // BRES-103 Prevent silent failure when emails with whitespaces are used.
 
   //mathavan@vedaconsulting.co.uk, 28/03/2018. 
   //In Civi, hook_civicrm_alterMailParams would call while printing PDF as well. 
   //we cannot expect toEmail from params when printing PDF(Invoice), which cause DB Constraint error while mte_createQueue();
   if (empty($params['toEmail'])) {
-    return FALSE;
+    return false;
   }
 
   $config = CRM_Core_Config::singleton();
@@ -278,7 +278,7 @@ function mte_civicrm_alterMailParams(&$params, $context = NULL) {
     $activityParams = array( 
       'id' => CRM_Mte_BAO_Mandrill::$_mailingActivityId,
       'target_contact_id' => mte_targetContactIds($params),
-      'deleteActivityTarget' => FALSE,
+      'deleteActivityTarget' => false,
       'version' => 3,
     );
   }
@@ -391,13 +391,13 @@ function mte_civicrm_buildForm($formName, &$form) {
     $values = $form->getVar('_values');
 
     if (CRM_Utils_Array::value('name', $values) != 'Secret Code') {
-      return FALSE; 
+      return false; 
     }
     $form->add('text',
       'value',
       ts('Value'),
       CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'value'),
-      TRUE
+      true
     );
   }
 } 
@@ -422,9 +422,9 @@ function mte_checkSettings($context) {
     array_key_exists('used_for', $mailingBackend) 
     && !empty($mailingBackend['used_for'][$usedFor])
   ) {
-    return TRUE;
+    return true;
   }
-  return FALSE;
+  return false;
 }
 
 /*
@@ -508,10 +508,10 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
     if ($varType == 'rows') { 
       $mail = new CRM_Mailing_DAO_Mailing();
       $mail->subject = "***All Transactional Emails***";
-      $mail->url_tracking = TRUE;
-      $mail->forward_replies = FALSE;
-      $mail->auto_responder = FALSE;
-      $mail->open_tracking = TRUE;
+      $mail->url_tracking = true;
+      $mail->forward_replies = false;
+      $mail->auto_responder = false;
+      $mail->open_tracking = true;
       $mail->find(true);
       if (array_key_exists('civicrm_mailing_mailing_name', $object->_columnHeaders)) {
         foreach ($var as $key => $value) {
@@ -539,10 +539,10 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
 function mte_createQueue(&$mandrillHeader, $toEmail) {
   $mail = new CRM_Mailing_DAO_Mailing();
   $mail->subject = "***All Transactional Emails***";
-  $mail->url_tracking = TRUE;
-  $mail->forward_replies = FALSE;
-  $mail->auto_responder = FALSE;
-  $mail->open_tracking = TRUE;
+  $mail->url_tracking = true;
+  $mail->forward_replies = false;
+  $mail->auto_responder = false;
+  $mail->open_tracking = true;
   $config = CRM_Core_Config::singleton();
   if (property_exists($config, 'civiVersion')) {
     $civiVersion = $config->civiVersion;
@@ -550,8 +550,8 @@ function mte_createQueue(&$mandrillHeader, $toEmail) {
   else {
     $civiVersion = CRM_Core_BAO_Domain::version();
   }
-  if ($mail->find(TRUE)) {
-    $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail, TRUE);
+  if ($mail->find(true)) {
+    $emails = CRM_Mte_BAO_Mandrill::retrieveEmailContactId($toEmail, true);
     $jobCLassName = 'CRM_Mailing_DAO_MailingJob';
     if (version_compare('4.4alpha1', $civiVersion) > 0) {
       $jobCLassName = 'CRM_Mailing_DAO_Job';

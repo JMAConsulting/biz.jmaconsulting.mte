@@ -43,9 +43,9 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
    */
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Mandrill SMTP Settings - Outbound Mail'));
-    $this->add('text', 'smtpServer', ts('SMTP Server'), NULL, TRUE);
-    $this->add('text', 'smtpPort', ts('SMTP Port'), NULL, TRUE);
-    $this->addYesNo('smtpAuth', ts('Authentication?'), NULL, TRUE);
+    $this->add('text', 'smtpServer', ts('SMTP Server'), null, true);
+    $this->add('text', 'smtpPort', ts('SMTP Port'), null, true);
+    $this->addYesNo('smtpAuth', ts('Authentication?'), null, true);
     $this->addElement('text', 'smtpUsername', ts('SMTP Username'));
     $this->addElement('password', 'smtpPassword', ts('SMTP Password'));
     $this->addElement('text', 'subaccount', ts('Mandrill Subaccount'));
@@ -59,7 +59,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
       'CiviMail Bulk Mailings' => 2
     );
     $this->addCheckBox('used_for', ts('Used For?'), $options,
-      NULL, NULL, NULL, NULL,
+      null, null, null, null,
       array('&nbsp;&nbsp;', '&nbsp;&nbsp;', '<br/>') 
     );
     
@@ -90,7 +90,7 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
         $errors['smtpPassword'] = 'If your SMTP server requires authentication, please provide a password.';
       }
     }
-    return empty($errors) ? TRUE : $errors;
+    return empty($errors) ? true : $errors;
   }
   
   /**
@@ -131,10 +131,10 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
       if ($formValues['smtpAuth']) {
         $params['username'] = $formValues['smtpUsername'];
         $params['password'] = $formValues['smtpPassword'];
-        $params['auth']     = TRUE;
+        $params['auth']     = true;
       }
       else {
-        $params['auth'] = FALSE;
+        $params['auth'] = false;
       }
 
       if (! empty($formValues['subaccount'])) {
@@ -219,9 +219,9 @@ class CRM_Mte_Form_MandrillSmtpSetting extends CRM_Admin_Form_Setting {
           $this->_defaults['smtpPassword'] = CRM_Utils_Crypt::decrypt($this->_defaults['smtpPassword']);
         }
       }
-      $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', TRUE);
+      $mandrillSecret = CRM_Core_OptionGroup::values('mandrill_secret', true);
       $this->_defaults['mandrill_post_url'] = CRM_Utils_System::url('civicrm/ajax/mte/callback', 
-        "mandrillSecret={$mandrillSecret['Secret Code']}", TRUE, NULL, FALSE, TRUE);
+        "mandrillSecret={$mandrillSecret['Secret Code']}", true, null, false, true);
     }
     return $this->_defaults;
   }

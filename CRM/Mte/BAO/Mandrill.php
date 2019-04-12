@@ -41,7 +41,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
    * @var array
    * @static
    */
-  public static $_mailingActivityId = NULL;
+  public static $_mailingActivityId = null;
 
   /**
    * class constructor
@@ -98,14 +98,14 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
       }
 
       //changes done to check if email exists in response array        
-      $metaData = CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : NULL;
+      $metaData = CRM_Utils_Array::value('metadata', $value['msg']) ? CRM_Utils_Array::value('CiviCRM_Mandrill_id', $value['msg']['metadata']) : null;
       $header = self::extractHeader($metaData);
       $mail = self::getMailing($header, $jobCLassName);
       $contacts = array();
       
-      if ($mail->find(TRUE)) {
-        if (($value['event'] == 'click' && $mail->url_tracking === FALSE) 
-          || ($value['event'] == 'open' && $mail->open_tracking === FALSE)
+      if ($mail->find(true)) {
+        if (($value['event'] == 'click' && $mail->url_tracking === false) 
+          || ($value['event'] == 'open' && $mail->open_tracking === false)
         ) {
           continue;
         }
@@ -117,7 +117,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
         $value['mailing_id'] = $mail->id;          
           // IF no activity id in header then create new activity
         if (empty($header[0])) {
-          self::createActivity($value, NULL, $header);
+          self::createActivity($value, null, $header);
         }
         if (empty($header[2])) {
           $params = array(
@@ -174,7 +174,7 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
             $tracker = new CRM_Mailing_BAO_TrackableURL();
             $tracker->url = $value['url'];
             $tracker->mailing_id = $mail->id;
-            if (!$tracker->find(TRUE)) {
+            if (!$tracker->find(true)) {
               $tracker->save();
             }
             $open = new CRM_Mailing_Event_BAO_TrackableURLOpen();
@@ -189,13 +189,13 @@ class CRM_Mte_BAO_Mandrill extends CRM_Core_DAO {
           case 'spam':
           case 'reject':
             if (empty($bounceType)) {
-              CRM_Core_PseudoConstant::populate($bounceType, 'CRM_Mailing_DAO_BounceType', TRUE, 'id', NULL, NULL, NULL, 'name');
+              CRM_Core_PseudoConstant::populate($bounceType, 'CRM_Mailing_DAO_BounceType', true, 'id', null, null, null, 'name');
             }
             
             //Delete queue in delivered since this email is not successfull
             $delivered = new CRM_Mailing_Event_BAO_Delivered();
             $delivered->event_queue_id = $eventQueueID;
-            if ($delivered->find(TRUE)) {
+            if ($delivered->find(true)) {
               $delivered->delete();
             }
             $bounceParams = array(
@@ -265,9 +265,9 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    *
    * @return array - array refrence of email details
    */
-  public static function retrieveEmailContactId($email, $checkUnique = FALSE) {
+  public static function retrieveEmailContactId($email, $checkUnique = false) {
     if(!$email) {
-      return FALSE;
+      return false;
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $matches = array();
@@ -355,10 +355,10 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
     }
     else {  
       $mail->subject = "***All Transactional Emails***";
-      $mail->url_tracking = TRUE;
-      $mail->forward_replies = FALSE;
-      $mail->auto_responder = FALSE;
-      $mail->open_tracking = TRUE;
+      $mail->url_tracking = true;
+      $mail->forward_replies = false;
+      $mail->auto_responder = false;
+      $mail->open_tracking = true;
     }
     
     return $mail;
@@ -377,13 +377,13 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    * @param array $header - MetaData from Mandrill Header
    *
    */
-  public static function createActivity($value, $context = NULL, &$header = array()) {
-    $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], TRUE);
+  public static function createActivity($value, $context = null, &$header = array()) {
+    $sourceContactId = self::retrieveEmailContactId($value['msg']['sender'], true);
     if (!CRM_Utils_Array::value('contact_id', $sourceContactId['email'])) {
-      return FALSE; 
+      return false; 
     }
     $emails = self::retrieveEmailContactId($value['msg']['email']);
-    $activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'name');
+    $activityTypes = CRM_Core_PseudoConstant::activityType(true, false, false, 'name');
     $subject = CRM_Utils_Array::value('subject', $value['msg']) ? $value['msg']['subject'] : "Mandrill Email $bType";
     if ($context) {
       $typeId = array_search("Mandrill Email $context", $activityTypes);
@@ -429,7 +429,7 @@ WHERE cc.is_deleted = 0 AND cc.is_deceased = 0 AND cgc.group_id = {$mailingBacke
    *
    */
   public static function logErrors($text) {
-    CRM_Core_Error::debug_var('Mandrill-Error', ts($text), TRUE, TRUE, 'Mandrill');
+    CRM_Core_Error::debug_var('Mandrill-Error', ts($text), true, true, 'Mandrill');
   }
 }
 
