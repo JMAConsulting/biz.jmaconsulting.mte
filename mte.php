@@ -235,7 +235,7 @@ function mte_civicrm_alterMailParams(&$params, $context = null) {
   if (!in_array($context, array('civimail', 'flexmailer'))) {
     CRM_Core_Smarty::singleton()->assign('alterMailer', 'ignore');
   }
-  if (!mte_checkSettings($context)) {
+  if (!mte_checkSettings($context) || $context == 'messageTemplate') {
     return false;
   }
   $session = CRM_Core_Session::singleton();
