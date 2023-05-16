@@ -503,6 +503,11 @@ function mte_civicrm_alterReportVar($varType, &$var, &$object) {
           $var->_select .= ' , count(DISTINCT(civicrm_mailing_event_opened.id)) as opened_count';
           $var->_groupBy = ' GROUP BY civicrm_mailing_event_queue.id';
         }
+        $sqlMode = CRM_Utils_SQL::getSqlModes();
+        if (CRM_Utils_SQL::supportsFullGroupBy() && !empty($sqlMode) && in_array('ONLY_FULL_GROUP_BY', $sqlMode) && !empty($var->_groupBy)) {
+          //Add select columns to group by.
+          $var->_groupBy .= ', civicrm_mandrill_activity.activity_id';
+        }
       }
     }
     if ($varType == 'rows') { 
